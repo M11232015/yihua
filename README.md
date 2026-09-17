@@ -1,4 +1,4 @@
-# Gothel's Graden — 品牌形象首頁
+# Gothel's Garden — 品牌形象首頁
 
 依據設計稿 `首頁 (1).png`（1920 × 5420）復刻的靜態網站，純 HTML + CSS + JavaScript，**無任何建置流程與外部相依**，直接用瀏覽器開啟 `index.html` 即可。
 
