@@ -104,6 +104,12 @@
       if (next) favourites.push(id); else favourites.splice(idx, 1);
       writeStore(FAV_KEY, favourites);
       favBtn.setAttribute('aria-pressed', String(next));
+      /* 成功切換後短暫放大 pop（重置 class 以便反覆觸發） */
+      if (!reduceMotion) {
+        favBtn.classList.remove('is-pop');
+        void favBtn.offsetWidth;
+        favBtn.classList.add('is-pop');
+      }
       toast(next ? '已加入收藏' : '已從收藏移除');
       return;
     }
@@ -221,23 +227,275 @@
     });
   }
 
-  /* ------------------------------------------------------
-     捲動進場
-     ------------------------------------------------------ */
+  /* ======================================================
+     動畫系統
+     ====================================================== */
+  const docEl = document.documentElement;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasIO = 'IntersectionObserver' in window;
 
-  if (reduceMotion || !('IntersectionObserver' in window)) {
-    $$('.reveal').forEach(el => el.classList.add('is-in'));
-  } else {
-    const io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry, i) {
-        if (!entry.isIntersecting) return;
-        const delay = Math.min(i, 5) * 80;
-        setTimeout(() => entry.target.classList.add('is-in'), delay);
-        io.unobserve(entry.target);
-      });
-    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
-
-    $$('.reveal').forEach(el => io.observe(el));
+  /* 清理登錄：卸載時解除 observer / timer / rAF / listener */
+  const cleanups = [];
+  function teardown() {
+    while (cleanups.length) {
+      try { cleanups.pop()(); } catch (err) { /* 忽略單一清理錯誤 */ }
+    }
   }
+  window.addEventListener('pagehide', teardown, { once: true });
+
+  /* ------------------------------------------------------
+     滾動揭露：一般揭露只播一次；卡片依「同排欄位」stagger
+     ------------------------------------------------------ */
+  function gridCols(grid) {
+    const t = getComputedStyle(grid).gridTemplateColumns;
+    return Math.max(1, t.split(' ').filter(Boolean).length);
+  }
+
+  function revealNow(el) {
+    let delay = 0;
+    if (el.classList.contains('card') && el.parentElement) {
+      const cols = gridCols(el.parentElement);
+      const idx = Array.prototype.indexOf.call(el.parentElement.children, el);
+      delay = (idx % cols) * 80;                  /* 同排逐欄，不累加整頁索引 */
+    } else if (el.dataset.revealDelay) {
+      delay = parseInt(el.dataset.revealDelay, 10) || 0;
+    }
+    el.style.setProperty('--reveal-delay', delay + 'ms');
+    el.classList.add('is-in');
+  }
+
+  function setupReveal() {
+    const els = $$('.reveal');
+    if (!els.length) return;
+
+    /* 減少動態或不支援 IO：直接全部顯示 */
+    if (reduceMotion || !hasIO) {
+      els.forEach(el => el.classList.add('is-in'));
+      return;
+    }
+
+    /* rootMargin 負下緣讓元素約進入 15% 才觸發；threshold 用 0 而非比例值，
+       因為分隔線這類極扁元素的 intersectionRatio 不可靠。 */
+    const io = new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        revealNow(entry.target);
+        obs.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -15% 0px', threshold: 0 });
+
+    els.forEach(el => io.observe(el));
+    cleanups.push(() => io.disconnect());
+
+    /* 安全網：若 IO 因故未回呼（例如瀏覽器還原捲動位置、直接進入錨點，
+       或環境不觸發），仍確保「當前可見」的內容顯示出來，不會永久隱形。 */
+    const sweep = function () {
+      const vh = window.innerHeight || 0;
+      els.forEach(function (el) {
+        if (el.classList.contains('is-in')) return;
+        const r = el.getBoundingClientRect();
+        if (r.top < vh * 0.92 && r.bottom > 0) revealNow(el);
+      });
+    };
+    const t1 = setTimeout(sweep, 600);
+    cleanups.push(() => clearTimeout(t1));
+
+    /* 捲動後援：IO 正常時元素已被 unobserve，這裡不會重複處理；
+       IO 若失效，則改由捲動逐一揭露，仍維持「進入視窗才顯示」的行為，
+       不會一次把整頁內容全部彈出。 */
+    let sweepTick = false;
+    const onSweep = function () {
+      if (sweepTick) return;
+      sweepTick = true;
+      requestAnimationFrame(function () { sweep(); sweepTick = false; });
+    };
+    window.addEventListener('scroll', onSweep, { passive: true });
+    window.addEventListener('resize', onSweep, { passive: true });
+    cleanups.push(function () {
+      window.removeEventListener('scroll', onSweep);
+      window.removeEventListener('resize', onSweep);
+    });
+  }
+
+  /* ------------------------------------------------------
+     首屏視差 + 滑鼠微移（僅桌面；遮罩分離，外框固定）
+     ------------------------------------------------------ */
+  function setupParallax() {
+    const stage = $('.hero__stage');
+    const layers = $$('.hero__media').map(function (el) {
+      const host = el.closest('[data-parallax]');
+      return { el: el, depth: host ? parseFloat(host.dataset.parallax) || 0 : 0 };
+    });
+    const desktop = window.matchMedia('(min-width:1025px)').matches;
+    const fine = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    if (reduceMotion || !desktop || !stage || !layers.length) return;
+
+    const aboutStars = $('.about__stars');   /* 側欄星花：隨捲動輕微轉動 */
+    const about = $('.about');
+
+    let mx = 0, my = 0, cx = 0, cy = 0, sy = window.scrollY, raf = 0, running = false, alive = true;
+
+    function onMouse(e) {
+      const r = stage.getBoundingClientRect();
+      mx = (e.clientX - r.left) / r.width - 0.5;   /* -0.5 .. 0.5 */
+      my = (e.clientY - r.top) / r.height - 0.5;
+      wake();
+    }
+    function onScroll() { sy = window.scrollY; wake(); }
+
+    /* 隨需喚醒：值收斂後停止 rAF，避免持續空轉的迴圈 */
+    function wake() {
+      if (running || !alive) return;
+      running = true;
+      raf = requestAnimationFrame(frame);
+    }
+    function frame() {
+      cx += (mx - cx) * 0.08;
+      cy += (my - cy) * 0.08;
+      const h = stage.offsetHeight || 1;
+      const prog = Math.min(1, Math.max(0, sy / h));   /* 0 頂端 → 1 捲離 */
+      layers.forEach(function (m) {
+        const par = prog * m.depth;                    /* 捲動視差 */
+        const dx = cx * m.depth * 0.5;                 /* 滑鼠微移 */
+        const dy = cy * m.depth * 0.5;
+        m.el.style.setProperty('--tx', dx.toFixed(2) + 'px');
+        m.el.style.setProperty('--ty', (par + dy).toFixed(2) + 'px');
+      });
+      /* 側欄星花：以品牌故事區在視窗中的進度映射到 ±10°（非持續自轉） */
+      if (aboutStars && about) {
+        const ar = about.getBoundingClientRect();
+        const vh = window.innerHeight || 1;
+        const p = Math.min(1, Math.max(0, (vh - ar.top) / (vh + ar.height)));
+        aboutStars.style.setProperty('--star-rot', ((p - 0.5) * 20).toFixed(2) + 'deg');
+      }
+      /* 滑鼠 lerp 收斂即停（捲動視差已隨當前 sy 套用完成） */
+      if (Math.abs(mx - cx) < 0.0015 && Math.abs(my - cy) < 0.0015) {
+        running = false;
+        return;
+      }
+      raf = requestAnimationFrame(frame);
+    }
+
+    if (fine) window.addEventListener('mousemove', onMouse, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    wake();  /* 依當前捲動位置套用一次初始視差 */
+
+    cleanups.push(function () {
+      alive = false; running = false;
+      cancelAnimationFrame(raf);
+      window.removeEventListener('mousemove', onMouse);
+      window.removeEventListener('scroll', onScroll);
+      layers.forEach(function (m) {
+        m.el.style.removeProperty('--tx');
+        m.el.style.removeProperty('--ty');
+      });
+      if (aboutStars) aboutStars.style.removeProperty('--star-rot');
+    });
+  }
+
+  /* ------------------------------------------------------
+     品牌開場：描線 + 倒數 → 淡出 → 首屏進場
+     ------------------------------------------------------ */
+  const intro = $('#intro');
+  const introCount = $('#introCount');
+  let introTimers = [];
+  let inertTargets = [];
+
+  function clearIntroTimers() {
+    introTimers.forEach(clearTimeout);
+    introTimers = [];
+  }
+
+  function tick(txt) {
+    if (!introCount) return;
+    introCount.textContent = txt;
+    introCount.classList.remove('tick');
+    void introCount.offsetWidth;
+    introCount.classList.add('tick');
+  }
+
+  function setBackgroundInert(on) {
+    if (on) {
+      inertTargets = [$('#siteHeader'), $('#main'), $('.site-footer')].filter(Boolean);
+      inertTargets.forEach(function (el) { el.setAttribute('inert', ''); el.setAttribute('aria-hidden', 'true'); });
+    } else {
+      inertTargets.forEach(function (el) { el.removeAttribute('inert'); el.removeAttribute('aria-hidden'); });
+      inertTargets = [];
+    }
+  }
+
+  function startHero() { docEl.classList.add('hero-in'); }
+
+  function endIntro() {
+    clearIntroTimers();
+    if (window.__ggIntroSafety) { clearTimeout(window.__ggIntroSafety); window.__ggIntroSafety = null; }
+    if (!intro) { startHero(); return; }
+
+    intro.classList.add('is-out');
+    /* 淡出與首屏進場略重疊，銜接更順 */
+    introTimers.push(setTimeout(startHero, 260));
+    introTimers.push(setTimeout(function () {
+      intro.setAttribute('hidden', '');
+      /* 移除強制旗標：之後若使用者設定了減少動態，仍照常關閉動態 */
+      docEl.classList.remove('is-drawing', 'force-intro');
+      setBackgroundInert(false);
+      /* 恢復焦點到主內容 */
+      const main = $('#main');
+      if (main) { main.setAttribute('tabindex', '-1'); main.focus({ preventScroll: true }); }
+    }, 620));
+  }
+
+  function runIntro(forced) {
+    if (!intro) { docEl.classList.remove('is-intro'); startHero(); return; }
+    clearIntroTimers();
+    /* 完整重置：清除進場與描線狀態，強制 reflow 讓 CSS 動畫重播 */
+    docEl.classList.remove('hero-in', 'anim-in', 'is-drawing');
+    docEl.classList.add('is-intro');
+    /* 手動重播＝明確要求，需覆寫減少動態才看得到 */
+    if (forced) docEl.classList.add('force-intro');
+    intro.classList.remove('is-out');
+    intro.removeAttribute('hidden');
+    if (introCount) { introCount.textContent = '03'; introCount.classList.remove('tick'); }
+    void intro.offsetWidth;
+    docEl.classList.add('is-drawing');
+
+    setBackgroundInert(true);
+    const skip = $('#introSkip');
+    if (skip) skip.focus({ preventScroll: true });
+
+    /* 倒數 03 → 02 → 01（每秒一次） */
+    introTimers.push(setTimeout(function () { tick('02'); }, 1000));
+    introTimers.push(setTimeout(function () { tick('01'); }, 2000));
+    /* 3s 描繪完成 + 約 150ms 停留 → 淡出銜接首屏 */
+    introTimers.push(setTimeout(endIntro, 3150));
+
+    /* 重播時重設安全逾時 */
+    if (window.__ggIntroSafety) clearTimeout(window.__ggIntroSafety);
+    window.__ggIntroSafety = setTimeout(endIntro, 4500);
+  }
+
+  function setupIntro() {
+    const skip = $('#introSkip');
+    if (skip) {
+      skip.addEventListener('click', function () { clearIntroTimers(); endIntro(); });
+    }
+    cleanups.push(clearIntroTimers);
+
+    const forcedByUrl = docEl.classList.contains('force-intro');
+    if (docEl.classList.contains('is-intro') && intro && (!reduceMotion || forcedByUrl)) {
+      runIntro(forcedByUrl);
+    } else {
+      /* 減少動態／?nointro：確保遮罩收起、內容直接顯示 */
+      if (intro) intro.setAttribute('hidden', '');
+      docEl.classList.remove('is-intro');
+      docEl.classList.add('anim-in');
+    }
+  }
+
+  /* ------------------------------------------------------
+     啟動
+     ------------------------------------------------------ */
+  setupReveal();
+  setupParallax();
+  setupIntro();
 })();

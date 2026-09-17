@@ -241,7 +241,7 @@ section[id], footer[id], main[id]{
   content:""; position:absolute; left:0; right:0; bottom:0;
   height:1px; background:currentColor;
   transform:scaleX(0); transform-origin:right;
-  transition:transform .4s var(--ease);
+  transition:transform .2s var(--ease-soft);   /* 底線由左至右展開，約 200ms */
 }
 .main-nav a:hover::after{ transform:scaleX(1); transform-origin:left; }
 
@@ -470,8 +470,9 @@ section[id], footer[id], main[id]{
   transform:translateY(-1px);
   transition:transform .5s var(--ease);
 }
-.link-curve:hover::before{ transform:scaleX(.92); }
-.link-curve:hover::after{ transform:translate(6px,-1px); }
+/* Hover：細線微延伸、箭頭向右移約 4px */
+.link-curve:hover::before{ transform:scaleX(1.04); }
+.link-curve:hover::after{ transform:translate(4px,-1px); }
 
 .link-curve--sm{ font-size:var(--fs-nav); padding-right:54px; }
 .link-curve--sm::after{ width:48px; height:36px; border-top-right-radius:48px; }
@@ -698,18 +699,13 @@ section[id], footer[id], main[id]{
 .footer__bottom a:hover{ opacity:.55; }
 
 /* =========================================================
-   進場動畫
-   ========================================================= */
-.reveal{
-  opacity:0;
-  transform:translateY(26px);
-  transition:opacity .9s var(--ease), transform .9s var(--ease);
-}
-.reveal.is-in{ opacity:1; transform:none; }
-
+   進場動畫（一般揭露的實作集中在檔案末端的「動畫」區塊，
+   以動畫參數變數統一控速；此處僅保留減少動態的全域關閉） */
 @media (prefers-reduced-motion: reduce){
   .reveal{ opacity:1; transform:none; transition:none; }
-  *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+  /* html.force-intro 例外：使用者以 ?replay 明確要求時，開場動畫仍需能播；
+     此 class 在開場結束後即移除，之後照常關閉動態。 */
+  html:not(.force-intro) *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
 }
 
 /* 小提示 */
@@ -866,14 +862,14 @@ section[id], footer[id], main[id]{
    動畫：品牌 Loading
    ========================================================= */
 .intro{ display:none; }
-html.intro .intro{
+html.is-intro .intro{
   position:fixed; inset:0; z-index:1000;
   display:flex; align-items:center; justify-content:center;
   background:var(--paper);
   opacity:1;
   transition:opacity .55s var(--ease-soft);
 }
-html.intro .intro.is-out{ opacity:0; pointer-events:none; }
+html.is-intro .intro.is-out{ opacity:0; pointer-events:none; }
 .intro[hidden]{ display:none !important; }
 
 .intro__inner{
@@ -943,35 +939,24 @@ html.is-drawing .intro__dot{ animation:introSpin 3s linear forwards; }
 .intro__skip:hover{ color:var(--ink); border-color:var(--line); }
 .intro__skip:focus-visible{ outline:2px solid var(--ink); outline-offset:3px; }
 
-/* 開發用「重播開場」按鈕（僅本機由 JS 加入） */
-.intro-replay{
-  position:fixed; right:14px; bottom:14px; z-index:900;
-  font-size:11px; letter-spacing:.12em; color:var(--muted);
-  background:var(--paper); border:1px solid var(--line);
-  padding:8px 12px;
-  box-shadow:0 6px 20px -12px rgba(0,0,0,.45);
-  transition:color .25s, border-color .25s;
-}
-.intro-replay:hover{ color:var(--ink); border-color:var(--muted); }
-
 /* =========================================================
    動畫：首屏分層進場（所有寬度共用的淡入／位移）
-   隱藏初始態僅在 html.intro 下生效 → 無 JS 或返回訪問時內容照常顯示
+   隱藏初始態僅在 html.is-intro 下生效 → 無 JS 或返回訪問時內容照常顯示
    ========================================================= */
-html.intro .header-bar,
-html.intro .main-nav,
-html.intro .hero__title span,
-html.intro .hero__shape,
-html.intro .hero__wheat,
-html.intro .hero__copy,
-html.intro .hero__lede,
-html.intro .hero__inner > .rule,
-html.intro .lattice,
-html.intro .star--hero{ opacity:0; }
+html.is-intro .header-bar,
+html.is-intro .main-nav,
+html.is-intro .hero__title span,
+html.is-intro .hero__shape,
+html.is-intro .hero__wheat,
+html.is-intro .hero__copy,
+html.is-intro .hero__lede,
+html.is-intro .hero__inner > .rule,
+html.is-intro .lattice,
+html.is-intro .star--hero{ opacity:0; }
 
-html.intro .hero__title span{ transform:translateY(16px); }
-html.intro .hero__wheat{ transform:translateY(12px); }
-html.intro .hero__copy{ transform:translateY(10px); }
+html.is-intro .hero__title span{ transform:translateY(16px); }
+html.is-intro .hero__wheat{ transform:translateY(12px); }
+html.is-intro .hero__copy{ transform:translateY(10px); }
 
 /* 釋放：加上 html.hero-in 後交錯進場 */
 html.hero-in .header-bar{ opacity:1; transition:opacity .5s var(--ease-soft); }
@@ -999,7 +984,10 @@ html.hero-in .star--hero{ opacity:1; transition:opacity .7s var(--ease-soft) .5s
 /* =========================================================
    動畫：滾動揭露
    ========================================================= */
-.reveal{
+/* 隱藏初始態一律以 html.js 為門檻：
+   沒有 JS（或 head script 未執行）時不套用，內容直接可見，
+   避免揭露機制失效就讓整頁內容永久隱形。 */
+html.js .reveal{
   opacity:0;
   transform:translateY(var(--reveal-shift));
   transition:opacity var(--dur-reveal) var(--ease-soft),
@@ -1007,17 +995,32 @@ html.hero-in .star--hero{ opacity:1; transition:opacity .7s var(--ease-soft) .5s
   transition-delay:var(--reveal-delay, 0ms);
   will-change:opacity, transform;
 }
-.reveal.is-in{ opacity:1; transform:none; will-change:auto; }
+html.js .reveal.is-in{ opacity:1; transform:none; will-change:auto; }
 
-/* 分隔線：線條由中央向左右展開，中央星花隨後淡入 */
-.reveal.reveal--line{
-  opacity:1; transform:scaleX(0);
+/* 分隔線：線條由中央向左右展開，中央星花隨後淡入。
+   注意：縮放必須施於 ::before 而非被觀察的 .divider 本身——
+   .divider 高 1px，若自身 scaleX(0) 則邊界框面積為 0，
+   IntersectionObserver 的 ratio 恆為 0，永遠不會觸發揭露。 */
+.divider{ background:transparent; }
+.divider::before{
+  content:"";
+  position:absolute; inset:0;
+  background:var(--line);
   transform-origin:center;
+}
+html.js .reveal.reveal--line{
+  opacity:1; transform:none;          /* 本體保持原尺寸，供 IO 正確量測 */
+}
+html.js .reveal--line::before{
+  transform:scaleX(0);
   transition:transform var(--dur-line) var(--ease-soft) var(--reveal-delay, 0ms);
 }
-.reveal.reveal--line.is-in{ transform:scaleX(1); }
-.reveal--line .star--divider{ opacity:0; transition:opacity var(--dur-reveal) var(--ease-soft) .25s; }
-.reveal--line.is-in .star--divider{ opacity:1; }
+html.js .reveal--line.is-in::before{ transform:scaleX(1); }
+html.js .reveal--line .star--divider{
+  opacity:0;
+  transition:opacity var(--dur-reveal) var(--ease-soft) .25s;
+}
+html.js .reveal--line.is-in .star--divider{ opacity:1; }
 
 /* =========================================================
    動畫：微互動
@@ -1031,8 +1034,8 @@ html.hero-in .star--hero{ opacity:1; transition:opacity .7s var(--ease-soft) .5s
 .card__fav.is-pop{ animation:favPop .35s var(--ease-soft); }
 
 /* About / See more：鍵盤 focus 也有清楚回饋（細線延伸＋箭頭位移） */
-.link-curve:focus-visible::before{ transform:scaleX(.92); }
-.link-curve:focus-visible::after{ transform:translate(6px, -1px); }
+.link-curve:focus-visible::before{ transform:scaleX(1.04); }
+.link-curve:focus-visible::after{ transform:translate(4px, -1px); }
 
 /* 導覽：鍵盤 focus 底線同 hover 由左展開 */
 .main-nav a:focus-visible::after{ transform:scaleX(1); transform-origin:left; }
@@ -1065,14 +1068,18 @@ html.hero-in .star--hero{ opacity:1; transition:opacity .7s var(--ease-soft) .5s
     width:100%; height:100%; object-fit:cover;
     transform:scale(1.12);
   }
-  html.intro .hero__shape img,
-  html.intro .hero__wheat img{ transform:scale(1.16); }
+  html.is-intro .hero__shape img,
+  html.is-intro .hero__wheat img{ transform:scale(1.16); }
   html.hero-in .hero__shape img,
   html.hero-in .hero__wheat img{
     transform:scale(1.12);
     transition:transform var(--dur-hero) var(--ease-soft);
   }
   html.hero-in .hero__wheat img{ transition-delay:.25s; }
+
+  /* 品牌故事側欄星花：隨捲動輕微轉動（由 JS 設定 --star-rot，總幅度約 ±10°），
+     非持續自轉；轉動施於各星本身，與容器的淡入位移分層互不干擾 */
+  .about__stars .star{ transform:rotate(var(--star-rot, 0deg)); }
 }
 
 /* =========================================================
@@ -1088,18 +1095,21 @@ html.hero-in .star--hero{ opacity:1; transition:opacity .7s var(--ease-soft) .5s
    動畫：減少動態
    ========================================================= */
 @media (prefers-reduced-motion: reduce){
-  /* 開場一律不顯示（head script 也不會加 .intro，此為雙保險） */
-  html.intro .intro,
-  .intro{ display:none !important; }
+  /* 開場一律不顯示（head script 也不會加 .intro，此為雙保險）。
+     例外：html.force-intro 代表使用者明確要求重播，此時仍允許顯示。 */
+  html:not(.force-intro) .intro{ display:none !important; }
+  html.force-intro .intro{ display:flex !important; }
   .reveal, .reveal.reveal--line{
     opacity:1 !important; transform:none !important; transition:none !important;
   }
+  .reveal--line::before{ transform:none !important; transition:none !important; }
   .reveal--line .star--divider{ opacity:1 !important; }
   /* 首屏進場隱藏態一律解除，內容直接顯示 */
-  html.intro .header-bar, html.intro .main-nav, html.intro .hero__title span,
-  html.intro .hero__shape, html.intro .hero__wheat, html.intro .hero__copy,
-  html.intro .hero__lede, html.intro .hero__inner > .rule, html.intro .lattice,
-  html.intro .star--hero{ opacity:1 !important; transform:none !important; }
+  html.is-intro .header-bar, html.is-intro .main-nav, html.is-intro .hero__title span,
+  html.is-intro .hero__shape, html.is-intro .hero__wheat, html.is-intro .hero__copy,
+  html.is-intro .hero__lede, html.is-intro .hero__inner > .rule, html.is-intro .lattice,
+  html.is-intro .star--hero{ opacity:1 !important; transform:none !important; }
   .hero__shape img, .hero__wheat img{ transform:none !important; }
   .hero__media{ transform:none !important; }
+  .about__stars .star{ transform:none !important; }
 }

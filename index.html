@@ -14,7 +14,14 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- 字型以非阻塞方式載入：第三方樣式表若因離線／慢網卡住，不會阻擋首次繪製而白屏。
+     頁面先用備用字（Noto Serif TC／Georgia／system sans）繪製，字型到了再換上。 -->
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+      media="print" onload="this.media='all'">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Noto+Sans+TC:wght@300;400;500;700&display=swap">
+</noscript>
 <link rel="stylesheet" href="assets/css/style.css">
 
 <script>
@@ -25,23 +32,28 @@
   d.classList.add('js');
   try {
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var seen = false;
-    try { seen = sessionStorage.getItem('gg.introSeen') === '1'; } catch (e) {}
-    /* 首次進入（本工作階段）且未要求減少動態 → 播放完整開場 */
-    if (!reduce && !seen) {
-      d.classList.add('intro');   /* 顯示 Loading，並讓首屏元素進入隱藏初始態 */
+    /* 每次載入都播放開場（不再以 sessionStorage 記錄是否看過） */
+    var q = location.search + location.hash;
+    var skip = /[?&#]nointro\b/.test(q);          /* 深連結／QA 用：直接跳過開場 */
+    /* ?replay 為使用者明確要求，會覆寫 prefers-reduced-motion；
+       自動播放仍完全尊重減少動態設定。 */
+    var forced = /[?&#]replay\b/.test(q);
+
+    if ((!reduce && !skip) || forced) {
+      d.classList.add('is-intro');   /* 顯示 Loading，並讓首屏元素進入隱藏初始態 */
+      if (forced) d.classList.add('force-intro');
     } else {
-      d.classList.add('anim-in'); /* 直接顯示首屏（返回／減少動態／無 sessionStorage） */
+      d.classList.add('anim-in'); /* 直接顯示首屏（減少動態／?nointro） */
     }
     /* 安全逾時：無論如何 4.5s 後強制解除開場遮罩，Loading 不得永久遮住網站 */
     window.__ggIntroSafety = setTimeout(function () {
-      d.classList.remove('intro');
+      d.classList.remove('is-intro');
       d.classList.add('anim-in');
       var ov = document.getElementById('intro');
       if (ov) { ov.setAttribute('hidden', ''); }
     }, 4500);
   } catch (err) {
-    d.classList.remove('intro');
+    d.classList.remove('is-intro');
     d.classList.add('anim-in');
   }
 })();
@@ -235,7 +247,7 @@
       </div>
     </div>
 
-    <div class="about__stars" aria-hidden="true">
+    <div class="about__stars reveal" aria-hidden="true">
       <svg class="star" viewBox="0 0 100 100"><use href="#star8"/></svg>
       <svg class="star" viewBox="0 0 100 100"><use href="#star8"/></svg>
       <svg class="star" viewBox="0 0 100 100"><use href="#star8"/></svg>
