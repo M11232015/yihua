@@ -1383,3 +1383,134 @@ html.js .reveal--line.is-in .star--divider{ opacity:1; }
   .cart-row__right{ grid-column:1 / -1; flex-direction:row; justify-content:space-between; align-items:center; }
   .pdp__buy .btn{ min-width:0; }
 }
+
+/* =========================================================
+   會員登入 / 會員中心
+   ========================================================= */
+
+/* ---- 登入頁 ---- */
+.auth{ max-width:460px; margin-inline:auto; text-align:center;
+  padding-block:clamp(10px,2vw,30px) var(--sp-block); }
+.auth .star{ font-size:clamp(38px,5vw,58px); margin:0 auto clamp(18px,2.4vw,30px); }
+.auth__title{ font-family:var(--ff-display); font-weight:400; font-size:clamp(26px,2.6vw,42px);
+  letter-spacing:.05em; margin:0 0 12px; }
+.auth__sub{ font-size:var(--fs-sm); color:var(--muted); margin:0 0 clamp(26px,3vw,40px); line-height:1.9; }
+.auth__form{ text-align:left; }
+.auth__form .field{ margin-bottom:22px; }
+.auth__err{ min-height:1.4em; margin:0 0 14px; font-size:var(--fs-sm); color:#b4443c; }
+.auth__demo{ margin-top:clamp(28px,3.4vw,44px); padding-top:clamp(22px,2.6vw,32px);
+  border-top:1px solid var(--line); text-align:left; }
+.auth__demo-title{ font-size:var(--fs-sm); color:var(--muted); letter-spacing:.06em; margin:0 0 14px; }
+.auth__demo-list{ display:grid; gap:12px; }
+.auth__demo-item{ display:flex; flex-direction:column; gap:4px; text-align:left;
+  border:1px solid var(--line); padding:12px 16px; transition:border-color .25s, background .25s; }
+.auth__demo-item:hover{ border-color:var(--ink); background:var(--paper-warm); }
+.auth__demo-label{ font-size:var(--fs-body); color:var(--ink); }
+.auth__demo-cred{ font-size:var(--fs-xs); color:var(--muted); letter-spacing:.04em; }
+.auth__foot{ margin-top:clamp(26px,3vw,38px); font-size:var(--fs-sm); color:var(--muted); }
+.auth__foot a{ color:var(--ink); border-bottom:1px solid var(--line); }
+.auth__foot a:hover{ border-color:var(--ink); }
+
+/* ---- 會員中心：版面 ---- */
+.member{ display:grid; grid-template-columns:clamp(240px,26%,320px) minmax(0,1fr);
+  gap:clamp(30px,4vw,64px); align-items:start; }
+
+/* 側欄 */
+.member__card{ background:var(--paper-warm); padding:clamp(22px,2.4vw,32px); margin-bottom:22px; }
+.member__type{ display:inline-block; font-size:var(--fs-xs); letter-spacing:.12em;
+  padding:5px 12px; border:1px solid var(--ink); margin-bottom:16px; }
+.member__type--B{ background:var(--ink); color:#fff; }
+.member__name{ font-family:var(--ff-display); font-size:clamp(20px,1.7vw,28px); margin:0 0 6px; line-height:1.25; }
+.member__title{ font-size:var(--fs-sm); color:var(--ink-soft); margin:0 0 10px; letter-spacing:.06em; }
+.member__email{ font-size:var(--fs-xs); color:var(--muted); margin:0; word-break:break-all; }
+.member__nav{ display:flex; flex-direction:column; border-top:1px solid var(--line); margin-bottom:22px; }
+.member__nav-item{ text-align:left; padding:15px 6px; border-bottom:1px solid var(--line);
+  font-size:var(--fs-body); color:var(--ink-soft); letter-spacing:.04em;
+  display:flex; justify-content:space-between; align-items:center; transition:color .25s, padding .25s; }
+.member__nav-item::after{ content:"›"; color:var(--line); transition:transform .25s, color .25s; }
+.member__nav-item:hover{ color:var(--ink); padding-left:12px; }
+.member__nav-item.is-active{ color:var(--ink); font-weight:500; }
+.member__nav-item.is-active::after{ color:var(--ink); transform:translateX(3px); }
+.member__logout{ width:100%; }
+
+/* 內容面板 */
+.panel{ min-height:280px; }
+.panel__title{ font-family:var(--ff-display); font-weight:400; font-size:clamp(22px,1.9vw,30px);
+  letter-spacing:.04em; margin:0 0 clamp(22px,2.6vw,34px); padding-bottom:16px; border-bottom:1px solid var(--line); }
+.panel__note{ font-size:var(--fs-sm); color:var(--muted); line-height:1.9; margin:22px 0 0; }
+.panel__note--tag{ background:var(--paper-warm); padding:14px 18px; color:var(--ink-soft);
+  border-left:2px solid var(--ink); }
+.panel__empty{ color:var(--muted); font-size:var(--fs-body); padding:30px 0; }
+
+/* 會員資訊 */
+.info-list{ margin:0; }
+.info-row{ display:grid; grid-template-columns:120px 1fr; gap:16px; padding:15px 0; border-bottom:1px solid var(--line-soft); }
+.info-row dt{ font-size:var(--fs-sm); color:var(--muted); letter-spacing:.06em; }
+.info-row dd{ margin:0; font-size:var(--fs-body); color:var(--ink); }
+
+/* 累積消費 */
+.stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(16px,2vw,28px); margin-bottom:28px; }
+.stat{ border:1px solid var(--line); padding:clamp(20px,2.4vw,32px); text-align:center; }
+.stat__num{ display:block; font-family:var(--ff-display); font-size:clamp(26px,2.6vw,42px); color:var(--ink); }
+.stat__lbl{ display:block; margin-top:8px; font-size:var(--fs-sm); color:var(--muted); letter-spacing:.06em; }
+.tier{ margin-top:6px; }
+.tier__head{ display:flex; justify-content:space-between; font-size:var(--fs-sm); color:var(--ink-soft); margin-bottom:10px; }
+.tier__bar{ height:6px; background:var(--line-soft); overflow:hidden; }
+.tier__bar span{ display:block; height:100%; background:var(--ink); }
+
+/* 消費商品排行 */
+.rank-list{ list-style:none; margin:0; padding:0; }
+.rank-row{ display:grid; grid-template-columns:auto 48px minmax(90px,1.1fr) minmax(0,2fr) auto;
+  gap:clamp(10px,1.6vw,20px); align-items:center; padding:12px 0; border-bottom:1px solid var(--line-soft); }
+.rank-row__no{ font-family:var(--ff-display); font-size:18px; color:var(--muted); width:22px; text-align:center; }
+.rank-row__img{ width:48px; height:48px; object-fit:cover; background:var(--placeholder); }
+.rank-row__name{ font-size:var(--fs-body); color:var(--ink); }
+.rank-row__bar{ display:block; height:6px; background:var(--line-soft); }
+.rank-row__bar span{ display:block; height:100%; background:#b39a80; }
+.rank-row__qty{ font-size:var(--fs-sm); color:var(--ink-soft); white-space:nowrap; }
+
+/* 喜好商品清單 */
+.fav-grid{ list-style:none; margin:0; padding:0; display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(16px,2vw,28px); }
+.fav-card__row{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-top:12px; }
+.fav-card__name{ font-size:var(--fs-sm); color:var(--ink); }
+.fav-card__price{ font-family:var(--ff-display); font-size:var(--fs-body); }
+.fav-card img{ aspect-ratio:1; object-fit:cover; background:var(--placeholder); width:100%; height:auto; }
+
+/* 過去購物清單 */
+.hist-list{ list-style:none; margin:0; padding:0; border-top:1px solid var(--line); }
+.hist-row{ display:grid; grid-template-columns:56px minmax(0,1fr) auto auto;
+  gap:clamp(12px,1.8vw,22px); align-items:center; padding:16px 0; border-bottom:1px solid var(--line); }
+.hist-row__img{ width:56px; height:56px; object-fit:cover; background:var(--placeholder); }
+.hist-row__name{ font-size:var(--fs-body); color:var(--ink); }
+.hist-row__date{ font-size:var(--fs-sm); color:var(--muted); white-space:nowrap; }
+.hist-row__buy{ font-size:var(--fs-sm); color:var(--ink); border-bottom:1px solid var(--line); white-space:nowrap; }
+.hist-row__buy:hover{ border-color:var(--ink); }
+
+/* 訂單管理 */
+.ord-wrap{ overflow-x:auto; }
+.ord-table{ width:100%; border-collapse:collapse; font-size:var(--fs-sm); }
+.ord-table th, .ord-table td{ text-align:left; padding:14px 12px; border-bottom:1px solid var(--line); vertical-align:top; white-space:nowrap; }
+.ord-table th{ font-weight:500; color:var(--muted); letter-spacing:.06em; }
+.ord-table td{ color:var(--ink-soft); }
+.ord__no{ font-family:var(--ff-display); color:var(--ink); }
+.ord__items{ white-space:normal; min-width:180px; }
+.ord__total{ font-family:var(--ff-display); color:var(--ink); }
+.ord__status{ display:inline-block; font-size:var(--fs-xs); padding:4px 10px; background:var(--paper-warm); border:1px solid var(--line); color:var(--ink-soft); }
+
+/* ---- 會員中心：響應式 ---- */
+@media (max-width:860px){
+  .member{ grid-template-columns:1fr; gap:clamp(24px,4vw,36px); }
+  .member__side{ display:grid; grid-template-columns:1fr; }
+}
+@media (max-width:560px){
+  .stat-grid{ grid-template-columns:1fr; }
+  .fav-grid{ grid-template-columns:1fr 1fr; }
+  .info-row{ grid-template-columns:1fr; gap:4px; padding:12px 0; }
+  .rank-row{ grid-template-columns:auto 40px minmax(0,1fr) auto; }
+  .rank-row__bar{ display:none; }
+  .rank-row__img{ width:40px; height:40px; }
+  .hist-row{ grid-template-columns:48px minmax(0,1fr) auto; }
+  .hist-row__buy{ grid-column:2 / -1; justify-self:start; }
+  .hist-row__img{ width:48px; height:48px; }
+}
