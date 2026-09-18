@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>會員中心｜Gothel's Garden</title>
-<meta name="description" content="Gothel's Garden 會員中心。">
+<title>專欄文章 ARTICLE｜Gothel's Garden</title>
+<meta name="description" content="Gothel's Garden 烘焙專欄：天然發酵、選粉、保存與食譜筆記。">
 <meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,7 +46,7 @@
       <li><a href="shop.html">SHOP</a></li><li class="nav-sep" aria-hidden="true"></li>
       <li><a href="subscription.html">SUBSCRIPTION</a></li><li class="nav-sep" aria-hidden="true"></li>
       <li><a href="course.html">COURSE</a></li><li class="nav-sep" aria-hidden="true"></li>
-      <li><a href="article.html">ARTICLE</a></li><li class="nav-sep" aria-hidden="true"></li>
+      <li><a href="article.html" aria-current="page">ARTICLE</a></li><li class="nav-sep" aria-hidden="true"></li>
       <li><a href="qa.html">Q&amp;A</a></li><li class="nav-sep" aria-hidden="true"></li>
       <li><a href="contacts.html">CONTACTS</a></li>
     </ul>
@@ -55,22 +55,66 @@
 <div class="header-spacer" aria-hidden="true"></div>
 
 <main id="main">
-  <section class="flow">
+  <section class="page-head">
     <div class="shell">
-      <h1 class="flow__title">會員中心</h1>
-      <div class="member">
-        <aside class="member__side">
-          <div class="member__card" id="memberCard"></div>
-          <nav class="member__nav" id="memberNav" aria-label="會員功能"></nav>
-          <button class="btn btn--line member__logout" type="button" id="logoutBtn">登出</button>
-        </aside>
-        <div class="member__content" id="memberContent"></div>
+      <p class="page-head__crumb"><a href="index.html">首頁</a><span>/</span>專欄文章</p>
+      <p class="page-head__kicker">Article</p>
+      <h1 class="page-head__title">烘焙筆記</h1>
+      <p class="page-head__lead">關於發酵、選粉與保存的實用筆記，把工作室裡的經驗，一篇篇寫給你。</p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="shell">
+      <div class="tile-grid">
+        <article class="tile reveal">
+          <div class="tile__media"><img src="assets/img/p-03.jpg" alt="原味貝果" width="900" height="600" loading="lazy"></div>
+          <div class="tile__meta"><span class="tag">發酵</span><span class="meta">閱讀 6 分鐘</span></div>
+          <h2 class="tile__title">天然酵母入門：養一罐屬於你的酸種</h2>
+          <p class="tile__desc">只要麵粉和水，七天養出充滿活力的酸種。從餵養比例到判斷活性，一次說清楚。</p>
+          <div class="tile__foot"><a class="link-curve link-curve--sm" href="#">閱讀全文</a></div>
+        </article>
+        <article class="tile reveal">
+          <div class="tile__media"><img src="assets/img/p-07.jpg" alt="北海道生吐司" width="900" height="600" loading="lazy"></div>
+          <div class="tile__meta"><span class="tag">選材</span><span class="meta">閱讀 5 分鐘</span></div>
+          <h2 class="tile__title">高筋、中筋、全麥：麵粉怎麼選？</h2>
+          <p class="tile__desc">蛋白質含量如何影響口感？不同麵包該搭配哪種麵粉？看完不再站在貨架前猶豫。</p>
+          <div class="tile__foot"><a class="link-curve link-curve--sm" href="#">閱讀全文</a></div>
+        </article>
+        <article class="tile reveal">
+          <div class="tile__media"><img src="assets/img/p-05.jpg" alt="早午餐組合" width="900" height="600" loading="lazy"></div>
+          <div class="tile__meta"><span class="tag">保存</span><span class="meta">閱讀 4 分鐘</span></div>
+          <h2 class="tile__title">麵包買回家，怎麼放才不會乾？</h2>
+          <p class="tile__desc">冷藏其實會加速老化！正確的常溫、冷凍與回烤方式，讓隔天的麵包一樣好吃。</p>
+          <div class="tile__foot"><a class="link-curve link-curve--sm" href="#">閱讀全文</a></div>
+        </article>
+        <article class="tile reveal">
+          <div class="tile__media"><img src="assets/img/p-08.jpg" alt="綜合甜甜圈" width="900" height="600" loading="lazy"></div>
+          <div class="tile__meta"><span class="tag">食譜</span><span class="meta">閱讀 8 分鐘</span></div>
+          <h2 class="tile__title">週末在家做：柔軟湯種小餐包</h2>
+          <p class="tile__desc">用湯種法做出雲朵般的小餐包，附上完整配方與時間表，新手也能一次成功。</p>
+          <div class="tile__foot"><a class="link-curve link-curve--sm" href="#">閱讀全文</a></div>
+        </article>
+        <article class="tile reveal">
+          <div class="tile__media"><img src="assets/img/p-06.jpg" alt="黑芝麻餐包" width="900" height="600" loading="lazy"></div>
+          <div class="tile__meta"><span class="tag">風味</span><span class="meta">閱讀 5 分鐘</span></div>
+          <h2 class="tile__title">為什麼酸種麵包會有淡淡的酸？</h2>
+          <p class="tile__desc">乳酸菌與醋酸菌的平衡，決定了酸種的風味走向。溫度與時間怎麼調，一次看懂。</p>
+          <div class="tile__foot"><a class="link-curve link-curve--sm" href="#">閱讀全文</a></div>
+        </article>
+        <article class="tile reveal">
+          <div class="tile__media"><img src="assets/img/p-04.jpg" alt="鄉村酸種麵包" width="900" height="600" loading="lazy"></div>
+          <div class="tile__meta"><span class="tag">工具</span><span class="meta">閱讀 6 分鐘</span></div>
+          <h2 class="tile__title">在家烤歐包，需要哪些基本工具？</h2>
+          <p class="tile__desc">從發酵籃到割紋刀，盤點入門必備工具與可省略的品項，不必一次買齊。</p>
+          <div class="tile__foot"><a class="link-curve link-curve--sm" href="#">閱讀全文</a></div>
+        </article>
       </div>
     </div>
   </section>
 </main>
 
-<footer class="site-footer" id="contacts">
+<footer class="site-footer">
   <div class="divider divider--footer" aria-hidden="true"><svg class="star star--divider" viewBox="0 0 100 100"><use href="#star8"/></svg></div>
   <div class="shell footer__grid">
     <div class="footer__brand">
@@ -110,8 +154,6 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="assets/js/store.js"></script>
-<script src="assets/js/auth.js"></script>
 <script src="assets/js/site.js"></script>
-<script src="assets/js/member.js"></script>
 </body>
 </html>

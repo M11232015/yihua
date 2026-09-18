@@ -87,6 +87,23 @@
     toastTimer = setTimeout(function () { toastEl.classList.remove('is-on'); }, 2200);
   };
 
+  /* ---- 滾動揭露（子頁共用；首頁另由 main.js 處理）---- */
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function revealAll(nodes) { for (var i = 0; i < nodes.length; i++) nodes[i].classList.add('is-in'); }
+  (function setupReveal() {
+    var nodes = document.querySelectorAll('.reveal');
+    if (!nodes.length) return;
+    if (reduceMotion || !('IntersectionObserver' in window)) { revealAll(nodes); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8%' });
+    for (var i = 0; i < nodes.length; i++) io.observe(nodes[i]);
+    /* 保險：若 3 秒後仍有殘留（例如觀察未觸發），全部顯示 */
+    setTimeout(function () { revealAll(document.querySelectorAll('.reveal:not(.is-in)')); }, 3000);
+  })();
+
   /* ---- 頁首購物車件數 ---- */
   if (window.GG) window.GG.mountBadge();
 

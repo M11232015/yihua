@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>會員中心｜Gothel's Garden</title>
-<meta name="description" content="Gothel's Garden 會員中心。">
+<title>烘焙課程 COURSE｜Gothel's Garden</title>
+<meta name="description" content="Gothel's Garden 烘焙課程：家庭烘焙入門、法式可頌專班、天然酵母養成。">
 <meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,7 +45,7 @@
       <li><a href="news.html">NEWS</a></li><li class="nav-sep" aria-hidden="true"></li>
       <li><a href="shop.html">SHOP</a></li><li class="nav-sep" aria-hidden="true"></li>
       <li><a href="subscription.html">SUBSCRIPTION</a></li><li class="nav-sep" aria-hidden="true"></li>
-      <li><a href="course.html">COURSE</a></li><li class="nav-sep" aria-hidden="true"></li>
+      <li><a href="course.html" aria-current="page">COURSE</a></li><li class="nav-sep" aria-hidden="true"></li>
       <li><a href="article.html">ARTICLE</a></li><li class="nav-sep" aria-hidden="true"></li>
       <li><a href="qa.html">Q&amp;A</a></li><li class="nav-sep" aria-hidden="true"></li>
       <li><a href="contacts.html">CONTACTS</a></li>
@@ -55,22 +55,56 @@
 <div class="header-spacer" aria-hidden="true"></div>
 
 <main id="main">
-  <section class="flow">
+  <section class="page-head">
     <div class="shell">
-      <h1 class="flow__title">會員中心</h1>
-      <div class="member">
-        <aside class="member__side">
-          <div class="member__card" id="memberCard"></div>
-          <nav class="member__nav" id="memberNav" aria-label="會員功能"></nav>
-          <button class="btn btn--line member__logout" type="button" id="logoutBtn">登出</button>
-        </aside>
-        <div class="member__content" id="memberContent"></div>
+      <p class="page-head__crumb"><a href="index.html">首頁</a><span>/</span>烘焙課程</p>
+      <p class="page-head__kicker">Course</p>
+      <h1 class="page-head__title">把烘焙<br>帶回你家廚房</h1>
+      <p class="page-head__lead">從一罐酵母到一條麵包，小班制、手把手，帶你在自家廚房重現職人的節奏。</p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="shell">
+      <div class="tile-grid">
+        <article class="tile reveal">
+          <div class="tile__media"><img src="assets/img/p-09.jpg" alt="湯種厚片吐司" width="900" height="600" loading="lazy"></div>
+          <div class="tile__meta"><span class="tag">入門</span><span class="meta">3 小時 · 每班 8 人</span></div>
+          <h2 class="tile__title">家庭烘焙入門</h2>
+          <p class="tile__desc">認識麵粉、酵母與水的比例，親手完成第一條湯種吐司，帶回家的不只是麵包，還有配方。</p>
+          <div class="tile__foot"><span class="tile__price">NT$1,800</span><a class="btn btn--line" href="contacts.html">報名諮詢</a></div>
+        </article>
+        <article class="tile reveal">
+          <div class="tile__media"><img src="assets/img/p-01.jpg" alt="法式可頌" width="900" height="600" loading="lazy"></div>
+          <div class="tile__meta"><span class="tag">進階</span><span class="meta">5 小時 · 每班 6 人</span></div>
+          <h2 class="tile__title">法式可頌專班</h2>
+          <p class="tile__desc">三折三摺的層次工法、奶油溫度掌控與整形技巧，一次搞懂酥脆可頌的所有關鍵。</p>
+          <div class="tile__foot"><span class="tile__price">NT$3,200</span><a class="btn btn--line" href="contacts.html">報名諮詢</a></div>
+        </article>
+        <article class="tile reveal">
+          <div class="tile__media"><img src="assets/img/p-10.jpg" alt="裸麥雜糧麵包" width="900" height="600" loading="lazy"></div>
+          <div class="tile__meta"><span class="tag">四堂系列</span><span class="meta">每堂 3 小時 · 每班 8 人</span></div>
+          <h2 class="tile__title">天然酵母養成班</h2>
+          <p class="tile__desc">從零養出屬於自己的酸種，學會餵養、判斷活性與烘烤，四堂課養成一輩子的習慣。</p>
+          <div class="tile__foot"><span class="tile__price">NT$6,800</span><a class="btn btn--line" href="contacts.html">報名諮詢</a></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section page-section--warm">
+    <div class="shell">
+      <h2 class="page-section__title">報名方式</h2>
+      <div class="pillars">
+        <div class="pillar"><p class="pillar__no">01</p><h3 class="pillar__title">線上諮詢</h3><p>透過聯絡我們頁面留下想上的課程與時段，我們將於一個工作天內回覆。</p></div>
+        <div class="pillar"><p class="pillar__no">02</p><h3 class="pillar__title">確認名額</h3><p>收到開課通知與匯款資訊後，完成報名費繳交即保留名額。</p></div>
+        <div class="pillar"><p class="pillar__no">03</p><h3 class="pillar__title">開心上課</h3><p>當天備妥圍裙即可，工具與食材由我們準備，成品全部帶回家。</p></div>
       </div>
     </div>
   </section>
 </main>
 
-<footer class="site-footer" id="contacts">
+<footer class="site-footer">
   <div class="divider divider--footer" aria-hidden="true"><svg class="star star--divider" viewBox="0 0 100 100"><use href="#star8"/></svg></div>
   <div class="shell footer__grid">
     <div class="footer__brand">
@@ -110,8 +144,6 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="assets/js/store.js"></script>
-<script src="assets/js/auth.js"></script>
 <script src="assets/js/site.js"></script>
-<script src="assets/js/member.js"></script>
 </body>
 </html>

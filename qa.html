@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>會員中心｜Gothel's Garden</title>
-<meta name="description" content="Gothel's Garden 會員中心。">
+<title>常見問答 Q&A｜Gothel's Garden</title>
+<meta name="description" content="Gothel's Garden 常見問答：訂購配送、付款、退換貨、課程與訂閱。">
 <meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,7 +47,7 @@
       <li><a href="subscription.html">SUBSCRIPTION</a></li><li class="nav-sep" aria-hidden="true"></li>
       <li><a href="course.html">COURSE</a></li><li class="nav-sep" aria-hidden="true"></li>
       <li><a href="article.html">ARTICLE</a></li><li class="nav-sep" aria-hidden="true"></li>
-      <li><a href="qa.html">Q&amp;A</a></li><li class="nav-sep" aria-hidden="true"></li>
+      <li><a href="qa.html" aria-current="page">Q&amp;A</a></li><li class="nav-sep" aria-hidden="true"></li>
       <li><a href="contacts.html">CONTACTS</a></li>
     </ul>
   </nav>
@@ -55,22 +55,54 @@
 <div class="header-spacer" aria-hidden="true"></div>
 
 <main id="main">
-  <section class="flow">
+  <section class="page-head">
     <div class="shell">
-      <h1 class="flow__title">會員中心</h1>
-      <div class="member">
-        <aside class="member__side">
-          <div class="member__card" id="memberCard"></div>
-          <nav class="member__nav" id="memberNav" aria-label="會員功能"></nav>
-          <button class="btn btn--line member__logout" type="button" id="logoutBtn">登出</button>
-        </aside>
-        <div class="member__content" id="memberContent"></div>
+      <p class="page-head__crumb"><a href="index.html">首頁</a><span>/</span>常見問答</p>
+      <p class="page-head__kicker">Q&A</p>
+      <h1 class="page-head__title">常見問答</h1>
+      <p class="page-head__lead">關於訂購、配送、付款與課程的常見疑問，都整理在這裡。找不到答案，歡迎與我們聯絡。</p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="shell" style="max-width:960px">
+
+      <div class="qa-group">
+        <h2 class="qa-group__title">訂購與配送</h2>
+        <details class="qa-item"><summary>配送需要多久？</summary><div class="qa-item__body"><p>本島訂單於出貨後 1–2 個工作天送達；新鮮麵包採低溫宅配，建議收到後儘早享用或冷凍保存。</p></div></details>
+        <details class="qa-item"><summary>運費怎麼計算？</summary><div class="qa-item__body"><p>單筆訂單運費為 NT$120，消費滿 NT$800 即免運。門市自取則免運費。</p></div></details>
+        <details class="qa-item"><summary>可以指定到貨時間嗎？</summary><div class="qa-item__body"><p>可於結帳頁備註希望的收貨時段，我們會盡量配合宅配時段，但實際到貨時間以物流為準。</p></div></details>
       </div>
+
+      <div class="qa-group">
+        <h2 class="qa-group__title">付款方式</h2>
+        <details class="qa-item"><summary>提供哪些付款方式？</summary><div class="qa-item__body"><p>目前支援信用卡線上刷卡、ATM 轉帳與門市現場付款。企業批發客戶可另洽月結。</p></div></details>
+        <details class="qa-item"><summary>可以開立發票或收據嗎？</summary><div class="qa-item__body"><p>所有訂單皆開立電子發票；需要統一編號者，請於結帳時填寫買受人統編。</p></div></details>
+      </div>
+
+      <div class="qa-group">
+        <h2 class="qa-group__title">退換貨</h2>
+        <details class="qa-item"><summary>麵包可以退換貨嗎？</summary><div class="qa-item__body"><p>由於烘焙食品屬易腐商品，恕不接受無故退換。若收到商品有瑕疵或運送破損，請於到貨當日拍照與我們聯絡，將盡快為你處理。</p></div></details>
+        <details class="qa-item"><summary>訂單成立後可以修改或取消嗎？</summary><div class="qa-item__body"><p>因商品皆為現做，出貨前可聯繫客服協助調整；已進入製作或出貨階段者恕無法取消。</p></div></details>
+      </div>
+
+      <div class="qa-group">
+        <h2 class="qa-group__title">課程</h2>
+        <details class="qa-item"><summary>沒有經驗可以報名嗎？</summary><div class="qa-item__body"><p>當然可以。入門課程專為零基礎設計，小班制手把手教學，跟著步驟就能完成作品。</p></div></details>
+        <details class="qa-item"><summary>需要自備工具或食材嗎？</summary><div class="qa-item__body"><p>不需要，所有工具與食材皆由我們準備，你只要帶上圍裙與好心情即可，成品全部帶回家。</p></div></details>
+      </div>
+
+      <div class="qa-group">
+        <h2 class="qa-group__title">訂閱制</h2>
+        <details class="qa-item"><summary>訂閱可以隨時取消嗎？</summary><div class="qa-item__body"><p>可以。訂閱採週期制，於下一次配送日前皆可暫停或取消，不綁約、不收取手續費。</p></div></details>
+        <details class="qa-item"><summary>可以更換配送內容嗎？</summary><div class="qa-item__body"><p>每週麵包箱由烘焙師依當季搭配，若有過敏原或忌口需求，可事先告知，我們會盡量替換。</p></div></details>
+      </div>
+
     </div>
   </section>
 </main>
 
-<footer class="site-footer" id="contacts">
+<footer class="site-footer">
   <div class="divider divider--footer" aria-hidden="true"><svg class="star star--divider" viewBox="0 0 100 100"><use href="#star8"/></svg></div>
   <div class="shell footer__grid">
     <div class="footer__brand">
@@ -110,8 +142,6 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="assets/js/store.js"></script>
-<script src="assets/js/auth.js"></script>
 <script src="assets/js/site.js"></script>
-<script src="assets/js/member.js"></script>
 </body>
 </html>

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>會員中心｜Gothel's Garden</title>
-<meta name="description" content="Gothel's Garden 會員中心。">
+<title>聯絡我們 CONTACTS｜Gothel's Garden</title>
+<meta name="description" content="Gothel's Garden 門市資訊、營業時間與聯絡表單。">
 <meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,29 +48,68 @@
       <li><a href="course.html">COURSE</a></li><li class="nav-sep" aria-hidden="true"></li>
       <li><a href="article.html">ARTICLE</a></li><li class="nav-sep" aria-hidden="true"></li>
       <li><a href="qa.html">Q&amp;A</a></li><li class="nav-sep" aria-hidden="true"></li>
-      <li><a href="contacts.html">CONTACTS</a></li>
+      <li><a href="contacts.html" aria-current="page">CONTACTS</a></li>
     </ul>
   </nav>
 </header>
 <div class="header-spacer" aria-hidden="true"></div>
 
 <main id="main">
-  <section class="flow">
+  <section class="page-head">
     <div class="shell">
-      <h1 class="flow__title">會員中心</h1>
-      <div class="member">
-        <aside class="member__side">
-          <div class="member__card" id="memberCard"></div>
-          <nav class="member__nav" id="memberNav" aria-label="會員功能"></nav>
-          <button class="btn btn--line member__logout" type="button" id="logoutBtn">登出</button>
-        </aside>
-        <div class="member__content" id="memberContent"></div>
+      <p class="page-head__crumb"><a href="index.html">首頁</a><span>/</span>聯絡我們</p>
+      <p class="page-head__kicker">Contacts</p>
+      <h1 class="page-head__title">來花園坐坐</h1>
+      <p class="page-head__lead">有任何關於商品、課程或合作的問題，填寫表單或直接來門市找我們，都很歡迎。</p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="shell contact-grid">
+      <div>
+        <h2 class="page-section__title">門市資訊</h2>
+        <dl class="info-list">
+          <div><dt>地址</dt><dd>台北市大安區花園路 12 巷 3 號</dd></div>
+          <div><dt>電話</dt><dd>02-2345-6789</dd></div>
+          <div><dt>信箱</dt><dd>hello@gothelsgarden.tw</dd></div>
+          <div><dt>營業時間</dt><dd>週二至週日 08:00–19:00（週一公休）</dd></div>
+        </dl>
+        <div class="map-embed" role="img" aria-label="門市位置地圖">地圖位置示意</div>
+      </div>
+
+      <div>
+        <h2 class="page-section__title">給我們留言</h2>
+        <form id="contactForm" novalidate>
+          <div class="form-field">
+            <label for="cName">姓名</label>
+            <input type="text" id="cName" name="name" autocomplete="name" required>
+          </div>
+          <div class="form-field">
+            <label for="cEmail">電子信箱</label>
+            <input type="email" id="cEmail" name="email" autocomplete="email" required>
+          </div>
+          <div class="form-field">
+            <label for="cTopic">主旨</label>
+            <select id="cTopic" name="topic">
+              <option value="商品訂購">商品訂購</option>
+              <option value="課程報名">課程報名</option>
+              <option value="企業批發">企業批發</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="cMsg">訊息內容</label>
+            <textarea id="cMsg" name="message" required></textarea>
+          </div>
+          <p class="form-msg" id="contactMsg" role="status" aria-live="polite"></p>
+          <button type="submit" class="btn btn--primary btn--full">送出訊息</button>
+        </form>
       </div>
     </div>
   </section>
 </main>
 
-<footer class="site-footer" id="contacts">
+<footer class="site-footer">
   <div class="divider divider--footer" aria-hidden="true"><svg class="star star--divider" viewBox="0 0 100 100"><use href="#star8"/></svg></div>
   <div class="shell footer__grid">
     <div class="footer__brand">
@@ -110,8 +149,35 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="assets/js/store.js"></script>
-<script src="assets/js/auth.js"></script>
 <script src="assets/js/site.js"></script>
-<script src="assets/js/member.js"></script>
+<script>
+(function(){
+  'use strict';
+  var form = document.getElementById('contactForm');
+  if (!form) return;
+  var msg = document.getElementById('contactMsg');
+  var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  function mark(el, bad){ el.classList.toggle('is-error', bad); }
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = document.getElementById('cName'),
+        email = document.getElementById('cEmail'),
+        message = document.getElementById('cMsg');
+    var okName = name.value.trim() !== '';
+    var okMail = EMAIL.test(email.value.trim());
+    var okMsg  = message.value.trim() !== '';
+    mark(name, !okName); mark(email, !okMail); mark(message, !okMsg);
+    if (!(okName && okMail && okMsg)) {
+      msg.className = 'form-msg is-error';
+      msg.textContent = '請確認姓名、正確的信箱與訊息內容都已填寫。';
+      return;
+    }
+    msg.className = 'form-msg is-ok';
+    msg.textContent = '訊息已送出，我們會盡快回覆你，謝謝！';
+    form.reset();
+    if (window.ggToast) window.ggToast('已送出訊息，感謝你的來信');
+  });
+})();
+</script>
 </body>
 </html>
