@@ -5,26 +5,14 @@
   'use strict';
 
   /* ------------------------------------------------------
-     商品資料
+     商品資料（改用共用資料層 store.js）
      ------------------------------------------------------ */
-  const SUBSCRIPTIONS = [
-    { id: 'sub-01', name: '每週麵包箱',   price: 230, sold: 128, img: 'p-04', alt: '每週配送的鄉村酸種麵包' },
-    { id: 'sub-02', name: '經典可頌計畫', price: 380, sold: 96,  img: 'p-01', alt: '層層酥脆的法式可頌' },
-    { id: 'sub-03', name: '週末早午餐組', price: 460, sold: 74,  img: 'p-05', alt: '搭配奶油甜點的早午餐組合' }
-  ];
-
-  /* 設計稿的 SHOP 區為 2 列共 6 張 */
-  const PRODUCTS = [
-    { id: 'p-03', name: '原味貝果',     price: 65,  sold: 312, img: 'p-03', alt: '疊放整齊的原味貝果' },
-    { id: 'p-06', name: '黑芝麻餐包',   price: 45,  sold: 402, img: 'p-06', alt: '撒上黑芝麻的小餐包' },
-    { id: 'p-07', name: '北海道生吐司', price: 260, sold: 156, img: 'p-07', alt: '切開的北海道生吐司' },
-    { id: 'p-08', name: '綜合甜甜圈',   price: 180, sold: 240, img: 'p-08', alt: '各種口味的手作甜甜圈' },
-    { id: 'p-09', name: '湯種厚片吐司', price: 120, sold: 198, img: 'p-09', alt: '柔軟的湯種厚片吐司' },
-    { id: 'p-10', name: '裸麥雜糧麵包', price: 195, sold: 64,  img: 'p-10', alt: '裸麥雜糧麵包與麥穗' }
-  ];
+  const store = window.GG;
+  const CATALOG = store ? store.catalog() : [];
+  const SUBSCRIPTIONS = CATALOG.filter(function (p) { return p.cat === '訂閱'; });
+  const PRODUCTS      = CATALOG.filter(function (p) { return p.cat !== '訂閱'; });
 
   const FAV_KEY = 'gg.favourites';
-  const CART_KEY = 'gg.cart';
 
   const $  = (sel, ctx) => (ctx || document).querySelector(sel);
   const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
@@ -42,7 +30,6 @@
   }
 
   let favourites = readStore(FAV_KEY, []);
-  let cartCount  = readStore(CART_KEY, 10);
 
   /* ------------------------------------------------------
      小提示
@@ -67,7 +54,7 @@
     const faved = favourites.indexOf(item.id) !== -1;
     return [
       '<li class="card reveal" data-id="' + item.id + '">',
-        '<a class="card__media" href="#" aria-label="查看 ' + item.name + '">',
+        '<a class="card__media" href="product.html?id=' + item.id + '" aria-label="查看 ' + item.name + '">',
           '<img src="assets/img/' + item.img + '.jpg" alt="' + item.alt + '" width="900" height="900" loading="lazy" decoding="async">',
           '<span class="card__add" data-add>加入購物車</span>',
         '</a>',
@@ -116,12 +103,11 @@
 
     const addBtn = e.target.closest('[data-add]');
     if (addBtn) {
-      e.preventDefault();
-      const name = $('.card__name', addBtn.closest('.card'));
-      cartCount += 1;
-      writeStore(CART_KEY, cartCount);
-      const counter = $('#cartCount');
-      if (counter) counter.textContent = String(cartCount);
+      e.preventDefault();          /* 「加入購物車」在商品連結內，阻止跳頁 */
+      const card = addBtn.closest('.card');
+      const id = card && card.dataset.id;
+      const name = $('.card__name', card);
+      if (id && store) store.addItem(id, 1);   /* 真的加入購物車（gg:cartchange 會更新頁首件數） */
       toast('已加入購物車：' + (name ? name.textContent : '商品'));
       return;
     }
@@ -131,8 +117,7 @@
     if (link) e.preventDefault();
   });
 
-  const counterEl = $('#cartCount');
-  if (counterEl) counterEl.textContent = String(cartCount);
+  if (store) store.mountBadge();   /* 頁首購物車件數（含跨分頁同步） */
 
   /* ------------------------------------------------------
      頁首：捲動狀態 / 行動選單 / 搜尋

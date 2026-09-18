@@ -7,10 +7,18 @@
 ## 檔案結構
 
 ```
-index.html                      首頁（唯一頁面）
+index.html                      首頁
+product.html                    商品詳情頁（?id=<商品id>）
+cart.html                       購物車
+checkout.html                   結帳（收件／配送／付款）
+complete.html                   訂單完成
 assets/
-  css/style.css                 全站樣式
-  js/main.js                    商品資料與互動邏輯
+  css/style.css                 全站樣式（含購買流程）
+  js/
+    store.js                    共用資料層：商品目錄 + 購物車（localStorage）
+    main.js                     首頁互動（動畫 + 串接購物車）
+    site.js                     子頁共用頁首行為（吸頂／選單／搜尋／件數／toast）
+    product.js / cart.js / checkout.js / complete.js   各頁邏輯
   img/
     hero-shape.png              首屏拱形主視覺（Figma 匯出，含遮罩）
     hero-wheat.png              首屏小麥圖（Figma 匯出，含右下圓角）
@@ -107,6 +115,41 @@ assets/
 並支援 `prefers-reduced-motion`（跳過開場、關閉視差／描線／位移）。
 
 ---
+
+## 購買流程
+
+首頁 → 商品詳情 → 購物車 → 結帳 → 完成，四頁為獨立 HTML，共用同一份
+localStorage 購物車（無後端，資料僅存本機、不跨裝置同步）。
+
+### 資料層 `assets/js/store.js`（`window.GG`）
+單一真實來源，四頁與首頁皆引用：
+
+| 功能 | API |
+|---|---|
+| 商品目錄 | `GG.catalog()`、`GG.find(id)` |
+| 購物車 | `GG.addItem(id,qty)`、`GG.setQty(id,qty)`、`GG.removeItem(id)`、`GG.clearCart()` |
+| 讀取 | `GG.getCart()`、`GG.lines()`（展開含商品明細） |
+| 金額 | `GG.count()`、`GG.subtotal()`、`GG.shipping()`、`GG.total()`、`GG.money(n)` |
+| 訂單 | `GG.saveOrder(o)`、`GG.getOrder()` |
+| 頁首件數 | `GG.mountBadge()`（監聽變更 + 跨分頁 `storage` 同步） |
+
+- **運費**：小計 ≥ $800 免運，否則 $120（購物車／結帳／完成三處金額一致）。
+- 購物車變更以 `gg:cartchange` 事件廣播，頁首件數即時更新；空車時徽章隱藏。
+
+### 各頁重點
+- **商品詳情**：依 `?id=` 顯示；數量增減（1–99）、加入購物車、下方「其他商品」。
+- **購物車**：列表可改數量／移除即時重算；空車顯示引導狀態；訂單摘要含免運提示。
+- **結帳**：收件人／配送／付款；前端驗證（姓名、電話、Email、地址），
+  門市自取時地址欄隱藏且免必填；送出即產生訂單編號並寫入 `gg.lastOrder`。
+- **完成**：顯示訂單編號、明細、金額與收件資訊，載入時清空購物車；
+  直接進入（無訂單資料）會導回首頁。
+
+### 已驗證（headless 渲染 + 真實瀏覽器 DOM 量測）
+加入購物車持久化、數量與移除的金額重算、免運門檻、結帳驗證擋下空表單、
+下單產生訂單並清空購物車、桌機／390 手機版版面、空車狀態、四頁皆無 console error。
+
+> **限制**：純前端、無金流與後端，付款方式與「刷卡」僅為畫面示意；
+> 購物車與訂單存於瀏覽器 localStorage，不跨裝置、清除瀏覽器資料即消失。
 
 ## 首頁動態效果
 
