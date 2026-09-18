@@ -56,10 +56,27 @@ window.GG = (function () {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
   }
 
-  /* ---- 目錄查詢 ---- */
-  function catalog() { return CATALOG.slice(); }
+  /* ---- 目錄查詢 ----
+     後台（admin-store.js）會把商品覆寫層寫入 gg.admin.products，
+     其中含 price / stock / active 等可編輯欄位；此處讀取以連動前台：
+     - allProducts()：完整清單（含下架品，供 find 直連商品頁用）
+     - catalog()：只回上架（active !== false）商品，供前台列表
+     無覆寫層時回內建 CATALOG，行為與原本一致（向後相容）。 */
+  var ADMIN_PROD_KEY = 'gg.admin.products';
+
+  function baseCatalog() { return CATALOG.slice(); }
+
+  function allProducts() {
+    var ov = read(ADMIN_PROD_KEY, null);
+    if (ov && ov.length) return ov;
+    return CATALOG.slice();
+  }
+  function catalog() {
+    return allProducts().filter(function (p) { return p.active !== false; });
+  }
   function find(id) {
-    for (var i = 0; i < CATALOG.length; i++) if (CATALOG[i].id === id) return CATALOG[i];
+    var all = allProducts();
+    for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i];
     return null;
   }
 
@@ -161,7 +178,7 @@ window.GG = (function () {
 
   return {
     SHIP_FEE: SHIP_FEE, FREE_SHIP: FREE_SHIP,
-    catalog: catalog, find: find,
+    catalog: catalog, find: find, baseCatalog: baseCatalog,
     getCart: getCart, addItem: addItem, setQty: setQty, removeItem: removeItem, clearCart: clearCart,
     count: count, subtotal: subtotal, shipping: shipping, total: total, lines: lines,
     getFavs: getFavs,
