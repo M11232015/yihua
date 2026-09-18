@@ -1653,7 +1653,7 @@ html.js .reveal--line.is-in .star--divider{ opacity:1; }
 /* 左文右圖兩欄；右欄為星花格紋描線裝飾 */
 .page-head__inner{
   display:grid;
-  grid-template-columns:minmax(0, 1fr) minmax(0, 42%);
+  grid-template-columns:minmax(0, 1fr) minmax(0, 50%);
   gap:clamp(24px, 4vw, 72px);
   align-items:center;
 }
@@ -1671,7 +1671,7 @@ html.js .reveal--line.is-in .star--divider{ opacity:1; }
   --deco-ease:  cubic-bezier(.25, .8, .35, 1);  /* 由稍快漸放緩 */
   position:relative;
   justify-self:end;
-  width:100%; max-width:480px;
+  width:100%; max-width:640px;
   opacity:1; transition:opacity .7s ease;
 }
 .deco-lattice.is-done{ opacity:.72; }           /* 完成後略微淡化 */
@@ -1688,17 +1688,6 @@ html.js .reveal--line.is-in .star--divider{ opacity:1; }
      描線由 deco.js 以 getTotalLength() 設定 dash 後過場，避免 pathLength
      與 non-scaling-stroke 在部分瀏覽器的 dash 計算落差。 */
 }
-
-/* 開發模式重播鈕（正式環境隱藏，由 deco.js 加 is-dev 顯示） */
-.deco-lattice__replay{
-  display:none; position:absolute; right:0; bottom:-34px;
-  padding:6px 12px; background:#fff;
-  border:1px solid var(--line);
-  font-size:12px; letter-spacing:.1em; color:var(--muted);
-  cursor:pointer; transition:color .25s, border-color .25s;
-}
-.deco-lattice__replay:hover{ color:var(--ink); border-color:var(--ink); }
-.deco-lattice.is-dev .deco-lattice__replay{ display:inline-flex; }
 
 @media (prefers-reduced-motion: reduce){
   .deco-lattice{ transition:none; }
@@ -1922,11 +1911,11 @@ html.js .reveal--line.is-in .star--divider{ opacity:1; }
   .feature-post,
   .contact-grid{ grid-template-columns:1fr; }
   .split--flip .split__media{ order:0; }
-  /* 頁首裝飾改置於文字下方，等比縮小並保留留白 */
+  /* 頁首裝飾改置於文字下方，保留留白 */
   .page-head__inner{ grid-template-columns:1fr; }
   .deco-lattice{
     justify-self:start;
-    width:100%; max-width:360px;
+    width:100%; max-width:460px;
     margin-top:clamp(22px, 5vw, 40px);
   }
 }

@@ -6,7 +6,7 @@
    - 初始化失敗或未執行時：CSS 預設為完整實線圓，圖案完整可見。
    - 描線以每個 <path> 的 getTotalLength() 設定 dash，沿實際路徑生長；
      搭配 vector-effect:non-scaling-stroke 維持線寬。
-   - 開發環境顯示「重播描線」鈕；卸載時清除計時器。
+   - 卸載時清除計時器。
    ========================================================= */
 (function () {
   'use strict';
@@ -16,11 +16,6 @@
 
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var timers = [];
-
-  function isDev() {
-    var h = location.hostname;
-    return location.protocol === 'file:' || h === 'localhost' || h === '127.0.0.1' || h === '' || h === '[::1]';
-  }
 
   function num(v, fallback) { var n = parseFloat(v); return isNaN(n) ? fallback : n; }
 
@@ -41,14 +36,6 @@
     var max = 0;
     stars(el).forEach(function (p) { var d = delayOf(p); if (d > max) max = d; });
     return max + cfg.draw;
-  }
-
-  function resetStatic(el) {
-    stars(el).forEach(function (p) {
-      p.style.transition = 'none';
-      p.style.strokeDasharray = '';
-      p.style.strokeDashoffset = '';
-    });
   }
 
   function play(el) {
@@ -83,17 +70,8 @@
     timers.push(t);
   }
 
-  function setupReplay(el) {
-    if (isDev()) el.classList.add('is-dev');
-    var btn = el.querySelector('.deco-lattice__replay');
-    if (btn && !btn.dataset.wired) {
-      btn.dataset.wired = '1';
-      btn.addEventListener('click', function () { resetStatic(el); play(el); });
-    }
-  }
-
   function begin() {
-    decos.forEach(function (el) { setupReplay(el); play(el); });
+    decos.forEach(function (el) { play(el); });
   }
 
   function start() {

@@ -41,7 +41,6 @@ const svg =
         <g class="deco-lattice__grid">${paths}
         </g>
       </svg>
-      <button class="deco-lattice__replay" type="button">重播描線</button>
     </div>`;
 
 const FILES = ['about.html', 'news.html', 'shop.html', 'subscription.html', 'course.html', 'article.html', 'qa.html', 'contacts.html'];
