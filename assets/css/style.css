@@ -298,6 +298,19 @@ section[id], footer[id], main[id]{
 .lattice--lg{ right:0; top:22%; width:34%; }   /* 右上，右緣切齊版心 */
 .lattice--sm{ left:0;  top:86%; width:34%; }   /* 左下，左緣切齊版心 */
 
+/* 首屏（banner）堆疊層級重新界定（由下而上）：
+   0 裝飾細線與描線花紋 → 1 麵包拱形圖 → 2 小麥圖 → 3 標題／內文／星形。
+   會描線的花紋自成獨立合成層（translateZ + will-change），其逐幀重繪
+   封在自己的圖層內，不再連帶重新光柵化上層的麵包／小麥遮罩圖 → 消除閃爍。 */
+.hero__inner > .rule{ z-index:0; }
+.hero__inner > .lattice{
+  z-index:0;
+  transform:translateZ(0);
+  will-change:opacity;
+  backface-visibility:hidden;
+  isolation:isolate;
+}
+
 /* 大標題 */
 .hero__title{
   position:absolute;
@@ -1069,7 +1082,11 @@ html.js .reveal--line.is-in .star--divider{ opacity:1; }
     position:absolute; inset:0;
     transform:translate3d(var(--tx, 0), var(--ty, 0), 0);
     will-change:transform;
+    backface-visibility:hidden;      /* 穩定合成層，避免與底層描線動畫互相重繪 */
   }
+  /* 麵包／小麥圖各自成獨立合成層，明確高於底層裝飾 */
+  .hero__shape{ z-index:1; }
+  .hero__wheat{ z-index:2; }
   /* 進場縮放層：與位移層分離，避免 transform 互相覆寫。
      靜止基準放大 1.12，為視差／滑鼠位移預留裁切餘裕，移動時不露白。 */
   .hero__shape img,
