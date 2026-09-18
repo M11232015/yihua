@@ -1648,6 +1648,59 @@ html.js .reveal--line.is-in .star--divider{ opacity:1; }
   padding-block:clamp(30px, 4.5vw, 78px) clamp(26px, 3.4vw, 56px);
   border-bottom:1px solid var(--line-soft);
 }
+/* 左文右圖兩欄；右欄為星花格紋描線裝飾 */
+.page-head__inner{
+  display:grid;
+  grid-template-columns:minmax(0, 1fr) minmax(0, 42%);
+  gap:clamp(24px, 4vw, 72px);
+  align-items:center;
+}
+.page-head__text{ min-width:0; }
+
+/* =========================================================
+   星花格紋描線裝飾（deco-lattice）
+   線色、線寬、描線時間集中於此；起始延遲與逐星間隔由產生器
+   寫入各 <path> 的行內 --d（250 + 欄×170 + 列×100 毫秒）。
+   ========================================================= */
+.deco-lattice{
+  --deco-color: #a5a39c;                        /* 低對比暖灰 */
+  --deco-width: 1;                              /* 線寬 0.8–1px */
+  --deco-draw:  1050ms;                         /* 每組描線時間 */
+  --deco-ease:  cubic-bezier(.25, .8, .35, 1);  /* 由稍快漸放緩 */
+  position:relative;
+  justify-self:end;
+  width:100%; max-width:480px;
+  opacity:1; transition:opacity .7s ease;
+}
+.deco-lattice.is-done{ opacity:.72; }           /* 完成後略微淡化 */
+.deco-lattice__svg{
+  display:block; width:100%; height:auto;
+  overflow:hidden; pointer-events:none;         /* 裁切至 viewBox；不攔截滑鼠 */
+}
+.deco-star{
+  fill:none;
+  stroke:var(--deco-color);
+  stroke-width:var(--deco-width);
+  stroke-linecap:round; stroke-linejoin:round;
+  /* 預設為完整實線圓：無 JS／初始化失敗／reduced-motion 皆顯示完整紋樣。
+     描線由 deco.js 以 getTotalLength() 設定 dash 後過場，避免 pathLength
+     與 non-scaling-stroke 在部分瀏覽器的 dash 計算落差。 */
+}
+
+/* 開發模式重播鈕（正式環境隱藏，由 deco.js 加 is-dev 顯示） */
+.deco-lattice__replay{
+  display:none; position:absolute; right:0; bottom:-34px;
+  padding:6px 12px; background:#fff;
+  border:1px solid var(--line);
+  font-size:12px; letter-spacing:.1em; color:var(--muted);
+  cursor:pointer; transition:color .25s, border-color .25s;
+}
+.deco-lattice__replay:hover{ color:var(--ink); border-color:var(--ink); }
+.deco-lattice.is-dev .deco-lattice__replay{ display:inline-flex; }
+
+@media (prefers-reduced-motion: reduce){
+  .deco-lattice{ transition:none; }
+}
 .page-head__crumb{
   font-size:var(--fs-sm); letter-spacing:.06em; color:var(--muted);
   margin:0 0 clamp(14px, 1.6vw, 24px);
@@ -1867,6 +1920,13 @@ html.js .reveal--line.is-in .star--divider{ opacity:1; }
   .feature-post,
   .contact-grid{ grid-template-columns:1fr; }
   .split--flip .split__media{ order:0; }
+  /* 頁首裝飾改置於文字下方，等比縮小並保留留白 */
+  .page-head__inner{ grid-template-columns:1fr; }
+  .deco-lattice{
+    justify-self:start;
+    width:100%; max-width:360px;
+    margin-top:clamp(22px, 5vw, 40px);
+  }
 }
 @media (max-width:720px){
   .tile-grid,
