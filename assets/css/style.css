@@ -1704,13 +1704,17 @@ html.js .reveal--line.is-in .star--divider{ opacity:1; }
   stroke:var(--deco-color);
   stroke-width:var(--deco-width);
   stroke-linecap:round; stroke-linejoin:round;
-  /* 預設為完整實線圓：無 JS／初始化失敗／reduced-motion 皆顯示完整紋樣。
-     描線由 deco.js 以 getTotalLength() 設定 dash 後過場，避免 pathLength
+  /* 描線由 deco.js 以 getTotalLength() 設定 dash 後過場，避免 pathLength
      與 non-scaling-stroke 在部分瀏覽器的 dash 計算落差。 */
 }
+/* JS 可用時：描線前先全部隱藏，避免「完整圖案先閃一下才開始描」。
+   html.js 於 <head> 即存在（首頁由內嵌腳本加、其餘頁面寫在 html class），
+   故第一次繪製就是隱藏態；deco.js 再逐筆描出。無 JS 時維持實線圓可見。 */
+html.js .deco-star{ opacity:0; }
 
 @media (prefers-reduced-motion: reduce){
   .deco-lattice{ transition:none; }
+  html.js .deco-star{ opacity:1; }    /* 減少動態：直接顯示完整靜態紋樣 */
 }
 .page-head__crumb{
   font-size:var(--fs-sm); letter-spacing:.06em; color:var(--muted);

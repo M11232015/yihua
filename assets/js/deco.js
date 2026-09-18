@@ -61,7 +61,7 @@
     /* 未描狀態：藏起、線頭偏細、透明 */
     plan.forEach(function (o) {
       var p = o.p;
-      if (!o.len) { p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; return; }
+      if (!o.len) { p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; p.style.opacity = '1'; return; }
       p.style.transition = 'none';
       p.style.strokeDasharray = o.len;
       p.style.strokeDashoffset = o.len;
@@ -88,8 +88,15 @@
     timers.push(t);
   }
 
+  function revealAll(el) {
+    stars(el).forEach(function (p) { p.style.opacity = '1'; });
+  }
+
   function begin() {
-    decos.forEach(function (el) { play(el); });
+    decos.forEach(function (el) {
+      try { play(el); }
+      catch (e) { revealAll(el); }   /* 萬一描線失敗，至少顯示完整圖案 */
+    });
   }
 
   function start() {
