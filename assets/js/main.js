@@ -50,22 +50,25 @@
      ------------------------------------------------------ */
   const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.4S3.8 15.3 3.8 9.6A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 8.2 2c0 5.7-8.2 10.8-8.2 10.8z"/></svg>';
 
+  const esc = (store && store.esc) ? store.esc : function (s) { return String(s == null ? '' : s); };
+
   function cardMarkup(item) {
     const faved = favourites.indexOf(item.id) !== -1;
+    const name = esc(item.name), alt = esc(item.alt), img = esc(item.img);
     return [
-      '<li class="card reveal" data-id="' + item.id + '">',
-        '<a class="card__media" href="product.html?id=' + item.id + '" aria-label="查看 ' + item.name + '">',
-          '<img src="assets/img/' + item.img + '.jpg" alt="' + item.alt + '" width="900" height="900" loading="lazy" decoding="async">',
+      '<li class="card reveal" data-id="' + esc(item.id) + '">',
+        '<a class="card__media" href="product.html?id=' + encodeURIComponent(item.id) + '" aria-label="查看 ' + name + '">',
+          '<img src="assets/img/' + img + '.jpg" alt="' + alt + '" width="900" height="900" loading="lazy" decoding="async">',
           '<span class="card__add" data-add>加入購物車</span>',
         '</a>',
         '<div class="card__row">',
           '<div>',
-            '<h3 class="card__name">' + item.name + '</h3>',
+            '<h3 class="card__name">' + name + '</h3>',
             '<p class="card__price"><span>$</span>' + item.price + '</p>',
           '</div>',
           '<button class="card__fav" type="button" data-fav',
             ' aria-pressed="' + faved + '"',
-            ' aria-label="收藏 ' + item.name + '">' + HEART + '</button>',
+            ' aria-label="收藏 ' + name + '">' + HEART + '</button>',
         '</div>',
         '<span class="card__sold">已售出 ' + item.sold + '</span>',
       '</li>'

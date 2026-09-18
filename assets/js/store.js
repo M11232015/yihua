@@ -96,22 +96,37 @@ window.GG = (function () {
     try { window.dispatchEvent(new CustomEvent('gg:cartchange', { detail: { count: count() } })); } catch (e) {}
   }
 
+  /* 商品若設有庫存（後台 stock 為數字），購物車該品總量不得超過庫存；
+     無 stock 欄位（未經後台設定）視為不限，維持原本行為。 */
+  function stockOf(p) { return (p && typeof p.stock === 'number') ? p.stock : Infinity; }
+
   function addItem(id, qty) {
-    if (!find(id)) return;
+    var p = find(id);
+    if (!p) return { added: 0, reason: 'notfound' };
     qty = Math.max(1, parseInt(qty, 10) || 1);
     var cart = getCart();
     var hit = null;
     for (var i = 0; i < cart.length; i++) if (cart[i].id === id) { hit = cart[i]; break; }
-    if (hit) hit.qty += qty; else cart.push({ id: id, qty: qty });
+    var current = hit ? hit.qty : 0;
+    var room = Math.max(0, stockOf(p) - current);
+    var add = Math.min(qty, room);
+    if (add <= 0) return { added: 0, reason: 'stock', stock: stockOf(p) };
+    if (hit) hit.qty += add; else cart.push({ id: id, qty: add });
     saveCart(cart);
+    return { added: add, capped: add < qty, stock: stockOf(p) };
   }
 
   function setQty(id, qty) {
     qty = parseInt(qty, 10) || 0;
     var cart = getCart();
-    if (qty <= 0) { removeItem(id); return; }
+    if (qty <= 0) { removeItem(id); return { qty: 0 }; }
+    var p = find(id);
+    var capped = false;
+    var max = stockOf(p);
+    if (qty > max) { qty = max; capped = true; }
     for (var i = 0; i < cart.length; i++) if (cart[i].id === id) { cart[i].qty = qty; break; }
     saveCart(cart);
+    return { qty: qty, capped: capped };
   }
 
   function removeItem(id) {
@@ -161,6 +176,14 @@ window.GG = (function () {
   /* ---- 金額格式化 ---- */
   function money(n) { return '$' + Number(n).toLocaleString('en-US'); }
 
+  /* ---- HTML 跳脫（供前台以 innerHTML 插入商品名等使用者可控字串）----
+     後台可新增任意名稱的商品，若不跳脫會造成儲存型 XSS。 */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
   /* ---- 頁首購物車件數徽章（四頁共用）----
      更新 #cartCount，並監聽購物車變更與跨分頁 storage 事件。 */
   function mountBadge() {
@@ -183,6 +206,7 @@ window.GG = (function () {
     count: count, subtotal: subtotal, shipping: shipping, total: total, lines: lines,
     getFavs: getFavs,
     saveOrder: saveOrder, getOrder: getOrder,
-    money: money, mountBadge: mountBadge
+    money: money, mountBadge: mountBadge,
+    esc: esc, stockOf: stockOf
   };
 })();
