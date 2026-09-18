@@ -229,12 +229,13 @@ section[id], footer[id], main[id]{
 .main-nav::before{ top:0; }
 .main-nav::after{ bottom:0; }
 .main-nav > ul{
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex; align-items:stretch; justify-content:space-between;
   min-height:var(--nav-h);                /* 設計稿 nav 佔 y 244–341 */
 }
 .main-nav a{
   position:relative;
-  display:block;
+  display:flex; align-items:center; justify-content:center;
+  height:100%;                            /* 撐滿整格，讓 hover 底色覆蓋整個項目框 */
   font-family:var(--ff-display);
   font-size:var(--fs-nav);
   font-weight:400;
@@ -244,7 +245,7 @@ section[id], footer[id], main[id]{
   color:var(--ink);
   transition:background-color .25s var(--ease-soft), color .25s var(--ease-soft);
 }
-/* Hover / focus：填滿黑底白字的按鈕效果 */
+/* Hover / focus：填滿黑底白字的按鈕效果（覆蓋整個項目框） */
 .main-nav a:hover,
 .main-nav a:focus-visible{ background:var(--ink); color:#fff; }
 
