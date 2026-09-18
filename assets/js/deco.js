@@ -76,10 +76,12 @@
 
   function start() {
     var root = document.documentElement;
-    /* 若品牌開場遮罩仍在，待其結束（is-intro 移除）後再啟動 */
-    if (root.classList.contains('is-intro') && 'MutationObserver' in window) {
+    /* 若品牌開場遮罩仍在，待首屏進場（hero-in）啟動或 is-intro 移除後再描線。
+       （首頁開場結束是加上 hero-in、而非移除 is-intro，故兩者皆視為可開始）*/
+    var ready = function () { return root.classList.contains('hero-in') || !root.classList.contains('is-intro'); };
+    if (!ready() && 'MutationObserver' in window) {
       var obs = new MutationObserver(function () {
-        if (!root.classList.contains('is-intro')) { obs.disconnect(); begin(); }
+        if (ready()) { obs.disconnect(); begin(); }
       });
       obs.observe(root, { attributes: true, attributeFilter: ['class'] });
       timers.push(setTimeout(function () { obs.disconnect(); begin(); }, 6000));  /* 保險 */

@@ -1664,11 +1664,14 @@ html.js .reveal--line.is-in .star--divider{ opacity:1; }
    線色、線寬、描線時間集中於此；起始延遲與逐星間隔由產生器
    寫入各 <path> 的行內 --d（250 + 欄×170 + 列×100 毫秒）。
    ========================================================= */
-.deco-lattice{
+/* 描線裝飾共用參數（內容頁 .deco-lattice 與首屏 .lattice 皆套用） */
+[data-deco]{
   --deco-color: #a5a39c;                        /* 低對比暖灰 */
   --deco-width: 1;                              /* 線寬 0.8–1px */
   --deco-draw:  1050ms;                         /* 每組描線時間 */
   --deco-ease:  cubic-bezier(.25, .8, .35, 1);  /* 由稍快漸放緩 */
+}
+.deco-lattice{
   position:relative;
   justify-self:end;
   width:100%; max-width:640px;
