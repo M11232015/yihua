@@ -232,10 +232,12 @@ section[id], footer[id], main[id]{
   display:flex; align-items:stretch; justify-content:space-between;
   min-height:var(--nav-h);                /* 設計稿 nav 佔 y 244–341 */
 }
+/* 連結項目成長填滿，讓相鄰空白併入格內，hover 底色即左右延伸到分隔線 */
+.main-nav > ul > li:not(.nav-sep){ flex:1 1 auto; display:flex; }
 .main-nav a{
   position:relative;
   display:flex; align-items:center; justify-content:center;
-  height:100%;                            /* 撐滿整格，讓 hover 底色覆蓋整個項目框 */
+  width:100%; height:100%;                /* 撐滿整格，讓 hover 底色覆蓋整個項目框（上下＋左右到分隔線）*/
   font-family:var(--ff-display);
   font-size:var(--fs-nav);
   font-weight:400;
