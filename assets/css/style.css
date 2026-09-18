@@ -240,15 +240,13 @@ section[id], footer[id], main[id]{
   font-weight:400;
   letter-spacing:.14em;
   white-space:nowrap;
-  padding-block:6px;
+  padding:6px clamp(10px, .9vw, 18px);
+  color:var(--ink);
+  transition:background-color .25s var(--ease-soft), color .25s var(--ease-soft);
 }
-.main-nav a::after{
-  content:""; position:absolute; left:0; right:0; bottom:0;
-  height:1px; background:currentColor;
-  transform:scaleX(0); transform-origin:right;
-  transition:transform .2s var(--ease-soft);   /* 底線由左至右展開，約 200ms */
-}
-.main-nav a:hover::after{ transform:scaleX(1); transform-origin:left; }
+/* Hover / focus：填滿黑底白字的按鈕效果 */
+.main-nav a:hover,
+.main-nav a:focus-visible{ background:var(--ink); color:#fff; }
 
 /* 項目之間的細直線：以獨立 flex item 參與 space-between，
    自然落在兩個項目的正中間（設計稿的間距亦為等分） */
@@ -1047,8 +1045,7 @@ html.js .reveal--line.is-in .star--divider{ opacity:1; }
 .link-curve:focus-visible::before{ transform:scaleX(1.04); }
 .link-curve:focus-visible::after{ transform:translateX(4px); }
 
-/* 導覽：鍵盤 focus 底線同 hover 由左展開 */
-.main-nav a:focus-visible::after{ transform:scaleX(1); transform-origin:left; }
+/* 導覽鍵盤 focus 回饋改由前段 .main-nav a:focus-visible 的填滿樣式處理 */
 
 /* =========================================================
    動畫：首屏視差（僅桌面，遮罩分離讓外框固定、內部影像可微移）
@@ -1642,12 +1639,8 @@ html.js .reveal--line.is-in .star--divider{ opacity:1; }
    內容頁共用（about / news / shop / subscription / course
    / article / qa / contacts）
    ========================================================= */
-/* 導覽目前頁 */
-.main-nav a[aria-current="page"]{ color:var(--ink); }
-.main-nav a[aria-current="page"]::after{
-  content:""; display:block; height:1px; margin-top:4px;
-  background:var(--ink);
-}
+/* 導覽目前頁：維持填滿樣式，與 hover 一致 */
+.main-nav a[aria-current="page"]{ background:var(--ink); color:#fff; }
 
 /* ---- 頁首橫幅 ---- */
 .page-head{
