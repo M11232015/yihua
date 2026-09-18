@@ -461,24 +461,28 @@ section[id], footer[id], main[id]{
   transform-origin:left;
   transition:transform .5s var(--ease);
 }
-/* 尾端的細曲線：右端點黏在底線上、左端點往上翹。
-   用「左邊框 + 左下圓角」：線條自左上方而下、於底部轉為水平並接上底線右端。
-   （若改成右邊框＋右下圓角，會變成左端貼線、右端翹起的相反方向。） */
+/* 尾端的細曲線：左端點往上翹，右端點黏在底線的最右緣。
+   兩個關鍵：
+   1) 半徑用橢圓值（寬 x 高），與方框等大。若寫單一 58px，因超過高度 44 會被
+      等比縮到 44，弧線下端會停在距右緣 14px 處而接不到線尾。
+   2) 左、下邊框同色同寬。圓角跨在兩條邊框之間，若其中一條為 0 寬或透明，
+      弧線會往該端漸細淡出；同寬才能維持 1px 均勻並確實接上線。
+      橫向半徑已佔滿整個寬度，故下邊框只會畫出這段弧、不會多出直線。 */
 .link-curve::after{
   content:"";
   position:absolute; right:0; bottom:0;
   width:58px; height:44px;
   border-left:1px solid var(--ink);
-  border-bottom-left-radius:58px;
-  transform:translateY(-1px);
+  border-bottom:1px solid var(--ink);
+  border-bottom-left-radius:58px 44px;
   transition:transform .5s var(--ease);
 }
 /* Hover：細線微延伸、箭頭向右移約 4px */
 .link-curve:hover::before{ transform:scaleX(1.04); }
-.link-curve:hover::after{ transform:translate(4px,-1px); }
+.link-curve:hover::after{ transform:translateX(4px); }
 
 .link-curve--sm{ font-size:var(--fs-nav); padding-right:54px; }
-.link-curve--sm::after{ width:48px; height:36px; border-bottom-left-radius:48px; }
+.link-curve--sm::after{ width:48px; height:36px; border-bottom-left-radius:48px 36px; }
 
 /* =========================================================
    分隔線
@@ -1038,7 +1042,7 @@ html.js .reveal--line.is-in .star--divider{ opacity:1; }
 
 /* About / See more：鍵盤 focus 也有清楚回饋（細線延伸＋箭頭位移） */
 .link-curve:focus-visible::before{ transform:scaleX(1.04); }
-.link-curve:focus-visible::after{ transform:translate(4px, -1px); }
+.link-curve:focus-visible::after{ transform:translateX(4px); }
 
 /* 導覽：鍵盤 focus 底線同 hover 由左展開 */
 .main-nav a:focus-visible::after{ transform:scaleX(1); transform-origin:left; }
