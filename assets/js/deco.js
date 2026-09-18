@@ -31,12 +31,12 @@
 
   function delayOf(path) { return num(getComputedStyle(path).getPropertyValue('--d'), 0); }
 
-  /* 全部描線完成所需時間 = 最大延遲 + 一組描線時間 */
-  function totalTime(el, cfg) {
-    var max = 0;
-    stars(el).forEach(function (p) { var d = delayOf(p); if (d > max) max = d; });
-    return max + cfg.draw;
-  }
+  /* 運筆用緩動：偏 in-out、起筆稍慢、收筆放緩，交錯幾組讓節奏不一致 */
+  var BRUSH_EASES = [
+    'cubic-bezier(.45,.05,.30,1)',
+    'cubic-bezier(.50,.12,.28,1)',
+    'cubic-bezier(.38,.08,.28,1)'
+  ];
 
   function play(el) {
     el.classList.remove('is-done');
@@ -44,29 +44,47 @@
     if (reduce) { el.classList.add('is-done'); return; }   /* 靜態完整呈現 */
 
     var cfg = config(el);
+    var width = num(getComputedStyle(el).getPropertyValue('--deco-width'), 1);
     var list = stars(el);
+    var maxEnd = 0;
 
-    /* 先把每條路徑設為「未描」狀態 */
-    list.forEach(function (p) {
+    /* 為每筆規劃：延遲加入 ±70ms 抖動打散格狀節奏、速度 0.82–1.32× 不一 */
+    var plan = list.map(function (p, i) {
       var len;
       try { len = p.getTotalLength(); } catch (e) { len = 0; }
-      if (!len) { p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; return; }
+      var delay = Math.max(0, delayOf(p) + (Math.random() * 2 - 1) * 70);
+      var dur = cfg.draw * (0.82 + Math.random() * 0.5);
+      maxEnd = Math.max(maxEnd, delay + dur);
+      return { p: p, len: len, delay: delay, dur: dur, ease: BRUSH_EASES[i % BRUSH_EASES.length] };
+    });
+
+    /* 未描狀態：藏起、線頭偏細、透明 */
+    plan.forEach(function (o) {
+      var p = o.p;
+      if (!o.len) { p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; return; }
       p.style.transition = 'none';
-      p.style.strokeDasharray = len;
-      p.style.strokeDashoffset = len;
+      p.style.strokeDasharray = o.len;
+      p.style.strokeDashoffset = o.len;
+      p.style.opacity = '0';
+      p.style.strokeWidth = (width * 0.5) + 'px';
     });
 
-    /* 強制回流後，逐一以延遲過場描出 */
-    void el.offsetWidth;
+    void el.offsetWidth;  /* 強制回流 */
 
-    list.forEach(function (p) {
-      if (!p.style.strokeDasharray) return;
-      var delay = delayOf(p);
-      p.style.transition = 'stroke-dashoffset ' + cfg.draw + 'ms ' + cfg.ease + ' ' + delay + 'ms';
+    /* 運筆：沿線描出 ＋ 墨色淡入 ＋ 線寬由細漸壓，像畫筆落下 */
+    plan.forEach(function (o) {
+      var p = o.p;
+      if (!o.len) return;
+      p.style.transition =
+        'stroke-dashoffset ' + o.dur + 'ms ' + o.ease + ' ' + o.delay + 'ms,' +
+        'opacity ' + (o.dur * 0.55) + 'ms ease-out ' + o.delay + 'ms,' +
+        'stroke-width ' + o.dur + 'ms ' + o.ease + ' ' + o.delay + 'ms';
       p.style.strokeDashoffset = '0';
+      p.style.opacity = '1';
+      p.style.strokeWidth = width + 'px';
     });
 
-    var t = setTimeout(function () { el.classList.add('is-done'); }, totalTime(el, cfg) + 80);
+    var t = setTimeout(function () { el.classList.add('is-done'); }, maxEnd + 120);
     timers.push(t);
   }
 
