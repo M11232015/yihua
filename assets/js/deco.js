@@ -92,7 +92,10 @@
     stars(el).forEach(function (p) { p.style.opacity = '1'; });
   }
 
+  var began = false;
   function begin() {
+    if (began) return;              /* 只描一次，避免 observer 與保險 timeout 重複觸發 */
+    began = true;
     decos.forEach(function (el) {
       try { play(el); }
       catch (e) { revealAll(el); }   /* 萬一描線失敗，至少顯示完整圖案 */
@@ -105,11 +108,13 @@
        （首頁開場結束是加上 hero-in、而非移除 is-intro，故兩者皆視為可開始）*/
     var ready = function () { return root.classList.contains('hero-in') || !root.classList.contains('is-intro'); };
     if (!ready() && 'MutationObserver' in window) {
+      var safety;
       var obs = new MutationObserver(function () {
-        if (ready()) { obs.disconnect(); begin(); }
+        if (ready()) { obs.disconnect(); clearTimeout(safety); begin(); }
       });
       obs.observe(root, { attributes: true, attributeFilter: ['class'] });
-      timers.push(setTimeout(function () { obs.disconnect(); begin(); }, 6000));  /* 保險 */
+      safety = setTimeout(function () { obs.disconnect(); begin(); }, 6000);  /* 保險 */
+      timers.push(safety);
     } else {
       begin();
     }
