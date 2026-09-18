@@ -461,14 +461,15 @@ section[id], footer[id], main[id]{
   transform-origin:left;
   transition:transform .5s var(--ease);
 }
-/* 尾端上翹的細曲線 */
+/* 尾端上揚的細曲線：凹弧。
+   用「右下圓角」讓線條自底線末端平滑兜起、至右端轉為垂直，凹面朝上；
+   若改用右上圓角則會變成拱起後向左收的凸弧。 */
 .link-curve::after{
   content:"";
   position:absolute; right:0; bottom:0;
   width:58px; height:44px;
   border-right:1px solid var(--ink);
-  border-bottom:1px solid transparent;
-  border-top-right-radius:58px;
+  border-bottom-right-radius:58px;
   transform:translateY(-1px);
   transition:transform .5s var(--ease);
 }
@@ -477,7 +478,7 @@ section[id], footer[id], main[id]{
 .link-curve:hover::after{ transform:translate(4px,-1px); }
 
 .link-curve--sm{ font-size:var(--fs-nav); padding-right:54px; }
-.link-curve--sm::after{ width:48px; height:36px; border-top-right-radius:48px; }
+.link-curve--sm::after{ width:48px; height:36px; border-bottom-right-radius:48px; }
 
 /* =========================================================
    分隔線
